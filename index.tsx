@@ -2,7 +2,7 @@
 // Everyday Winners • Credit Path (custom theme)
 // Works on iOS/Android/Web (Expo). Beginner-friendly inline comments.
 
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  Animated,
 } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -37,9 +38,12 @@ const THEME = {
   },
 };
 
-// Gradient per lesson type. LinearGradient's `colors` prop requires at least two
-// color values, so we annotate the return type as a tuple to satisfy TypeScript.
-const gradientByType = (type: string): readonly [string, string] => {
+// Default splash art (replace URL with your hosted image)
+const SPLASH_IMAGE = "https://via.placeholder.com/1080x1920.png?text=Everyday+Winners";
+
+// Gradient per lesson type
+const gradientByType = (type: string) => {
+
   switch (type) {
     case "core":
       return [THEME.brand.teal, THEME.brand.tealDark];
@@ -104,6 +108,25 @@ const emojiByType = (type: string) =>
   type === "reading"   ? "📖" :
   type === "listening" ? "🎧" :
   type === "video"     ? "🎥" : "⭐";
+
+function SplashScreen({ onContinue }: { onContinue: () => void }) {
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fade, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+  }, []);
+  return (
+    <View style={styles.splashContainer}>
+      <Animated.Image
+        source={{ uri: SPLASH_IMAGE }}
+        style={[styles.splashImage, { opacity: fade }]}
+        resizeMode="cover"
+      />
+      <TouchableOpacity style={styles.splashButton} onPress={onContinue} activeOpacity={0.85}>
+        <Text style={styles.splashButtonText}>Start Winning Today</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 // ──────────────────────────────────────────────────────────────────────────────
 // One path item: **Tile** with gradient (our new look)
@@ -282,8 +305,9 @@ export default function Page() {
   // Keep lessons in state so we can update stars/unlocks
   const [lessons, setLessons] = useState(SEED_LESSONS);
   const [wallet] = useState(initialWallet);
-  const [activeLesson, setActiveLesson] = useState(null);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [activeLesson, setActiveLesson] = useState<any | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
+
 
   // Open/close lesson
   const openLesson  = useCallback((lesson: any) => setActiveLesson(lesson), []);
@@ -315,22 +339,12 @@ export default function Page() {
     });
   }, [activeLesson]);
 
-  let content;
-  if (activeLesson) {
-    content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
-  } else if (showLeaderboard) {
-    content = <LeaderboardScreen onClose={() => setShowLeaderboard(false)} />;
-  } else {
-    content = (
-      <PathScreen
-        lessons={lessons}
-        openLesson={openLesson}
-        wallet={wallet}
-        openLeaderboard={() => setShowLeaderboard(true)}
-      />
-    );
-  }
-  return <SafeAreaProvider>{content}</SafeAreaProvider>;
+  return showSplash
+    ? <SplashScreen onContinue={() => setShowSplash(false)} />
+    : activeLesson
+      ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
+      : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -416,14 +430,10 @@ const styles = StyleSheet.create({
   cta: { backgroundColor: THEME.brand.gold, padding: 14, borderRadius: 12, alignItems: "center" },
   ctaText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
   lessonStars: { marginTop: 12, fontWeight: "800", color: THEME.text.primary },
-  leaderboardScreen: { flex: 1, backgroundColor: THEME.brand.slate, alignItems: "center", padding: 16 },
-  trophyRow: { flexDirection: "row", gap: 8, marginTop: 20 },
-  trophy: { fontSize: 32 },
-  leaderboardCongrats: { marginTop: 20, color: THEME.text.primary, fontWeight: "800", fontSize: 18, textAlign: "center" },
-  leaderboardList: { width: "100%", marginTop: 16 },
-  leaderboardItem: { flexDirection: "row", alignItems: "center", paddingVertical: 8 },
-  leaderboardRank: { width: 24, fontWeight: "800", color: THEME.text.primary, fontSize: 16 },
-  leaderboardAvatar: { fontSize: 24, marginRight: 8 },
-  leaderboardName: { flex: 1, color: THEME.text.primary, fontWeight: "600" },
-  leaderboardXP: { color: THEME.text.secondary, fontWeight: "600" },
+
+  splashContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: THEME.brand.navy },
+  splashImage: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
+  splashButton: { backgroundColor: THEME.brand.gold, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+  splashButtonText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
+
 });
