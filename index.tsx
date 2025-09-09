@@ -37,14 +37,20 @@ const THEME = {
   },
 };
 
-// Gradient per lesson type
-const gradientByType = (type: string) => {
+// Gradient per lesson type. LinearGradient's `colors` prop requires at least two
+// color values, so we annotate the return type as a tuple to satisfy TypeScript.
+const gradientByType = (type: string): readonly [string, string] => {
   switch (type) {
-    case "core":      return [THEME.brand.teal, THEME.brand.tealDark];
-    case "reading":   return ["#8A5CF6", "#6B46D6"]; // purple family
-    case "listening": return ["#F97316", "#EA580C"]; // orange family
-    case "video":     return ["#F43F5E", "#E11D48"]; // rose family
-    default:          return [THEME.brand.teal, THEME.brand.tealDark];
+    case "core":
+      return [THEME.brand.teal, THEME.brand.tealDark];
+    case "reading":
+      return ["#8A5CF6", "#6B46D6"]; // purple family
+    case "listening":
+      return ["#F97316", "#EA580C"]; // orange family
+    case "video":
+      return ["#F43F5E", "#E11D48"]; // rose family
+    default:
+      return [THEME.brand.teal, THEME.brand.tealDark];
   }
 };
 
@@ -102,15 +108,14 @@ const emojiByType = (type: string) =>
 // ──────────────────────────────────────────────────────────────────────────────
 // One path item: **Tile** with gradient (our new look)
 // ──────────────────────────────────────────────────────────────────────────────
-function LessonTile({
-  item,
-  index,
-  onPress,
-}: {
+type LessonTileProps = {
   item: any;
   index: number;
   onPress: (l: any) => void;
-}) {
+  key?: any;
+};
+
+function LessonTile({ item, index, onPress }: LessonTileProps) {
   // Zig-zag layout (left/right)
   const isLeft = index % 2 === 0;
   const TILE_W = 220;
@@ -276,7 +281,7 @@ export default function Page() {
   // Keep lessons in state so we can update stars/unlocks
   const [lessons, setLessons] = useState(SEED_LESSONS);
   const [wallet] = useState(initialWallet);
-  const [activeLesson, setActiveLesson] = useState<any | null>(null);
+  const [activeLesson, setActiveLesson] = useState(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Open/close lesson
