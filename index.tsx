@@ -15,7 +15,7 @@ import {
   Animated,
 } from "react-native";
 import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -43,12 +43,18 @@ const SPLASH_IMAGE = "https://via.placeholder.com/1080x1920.png?text=Everyday+Wi
 
 // Gradient per lesson type
 const gradientByType = (type: string) => {
+
   switch (type) {
-    case "core":      return [THEME.brand.teal, THEME.brand.tealDark];
-    case "reading":   return ["#8A5CF6", "#6B46D6"]; // purple family
-    case "listening": return ["#F97316", "#EA580C"]; // orange family
-    case "video":     return ["#F43F5E", "#E11D48"]; // rose family
-    default:          return [THEME.brand.teal, THEME.brand.tealDark];
+    case "core":
+      return [THEME.brand.teal, THEME.brand.tealDark];
+    case "reading":
+      return ["#8A5CF6", "#6B46D6"]; // purple family
+    case "listening":
+      return ["#F97316", "#EA580C"]; // orange family
+    case "video":
+      return ["#F43F5E", "#E11D48"]; // rose family
+    default:
+      return [THEME.brand.teal, THEME.brand.tealDark];
   }
 };
 
@@ -59,18 +65,31 @@ const initialWallet = { coins: 10, flames: 0, gems: 189, energy: 25 };
 
 // Lesson seed data (pretend DB rows)
 const SEED_LESSONS = [
-  { id: "S1P1",  title: "FCRA 101 Part 1 – Name the Parties",           type: "reading", unlocked: true,  stars: 0, total: 3 },
-  { id: "S1P2",  title: "FCRA 101 Part 2 – Purpose and Scope",          type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P3",  title: "FCRA 101 Part 3 – Permissible Purpose",        type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P4",  title: "FCRA 101 Part 4 – Consumer Rights",            type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P5",  title: "FCRA 101 Part 5 – Furnisher Duties",           type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P6",  title: "FCRA 101 Part 6 – CRA Duties",                 type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P7",  title: "FCRA 101 Part 7 – Dispute Process",            type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P8",  title: "FCRA 101 Part 8 – Enforcement",                type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P9",  title: "FCRA 101 Part 9 – Penalties",                  type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1P10", title: "FCRA 101 Part 10 – Practical Application",     type: "reading", unlocked: false, stars: 0, total: 3 },
-  { id: "S1Quiz", title: "FCRA 101 Quiz",                                 type: "core",    unlocked: false, stars: 0, total: 3 },
-  { id: "S1Workbook", title: "FCRA 101 Workbook",                         type: "core",    unlocked: false, stars: 0, total: 3 },
+  { id: "S1P1",  title: "FCRA 101 Part 1 – Name the Parties",           type: "reading", unlocked: true,  stars: 0, total: 3, section: 1 },
+  { id: "S1P2",  title: "FCRA 101 Part 2 – Purpose and Scope",          type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P3",  title: "FCRA 101 Part 3 – Permissible Purpose",        type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P4",  title: "FCRA 101 Part 4 – Consumer Rights",            type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P5",  title: "FCRA 101 Part 5 – Furnisher Duties",           type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P6",  title: "FCRA 101 Part 6 – CRA Duties",                 type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P7",  title: "FCRA 101 Part 7 – Dispute Process",            type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P8",  title: "FCRA 101 Part 8 – Enforcement",                type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P9",  title: "FCRA 101 Part 9 – Penalties",                  type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1P10", title: "FCRA 101 Part 10 – Practical Application",     type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1Quiz", title: "FCRA 101 Quiz",                               type: "core",    unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S1Workbook", title: "FCRA 101 Workbook",                       type: "core",    unlocked: false, stars: 0, total: 3, section: 1 },
+  { id: "S2P1", title: "FDCPA 101 Part 1 – Overview",                   type: "reading", unlocked: false, stars: 0, total: 3, section: 2 },
+  { id: "S2P2", title: "FDCPA 101 Part 2 – Communication Rules",        type: "reading", unlocked: false, stars: 0, total: 3, section: 2 },
+  { id: "S2Quiz", title: "FDCPA 101 Quiz",                              type: "core",    unlocked: false, stars: 0, total: 3, section: 2 },
+  { id: "S2Workbook", title: "FDCPA 101 Workbook",                      type: "core",    unlocked: false, stars: 0, total: 3, section: 2 },
+];
+
+// Leaderboard seed data (pretend weekly XP standings)
+const SEED_LEADERBOARD = [
+  { name: "Ryan", avatar: "🧔", xp: 862 },
+  { name: "Beatriz", avatar: "👩", xp: 480 },
+  { name: "Diego", avatar: "👨‍🦱", xp: 266 },
+  { name: "Larissa Holanda", avatar: "👩‍🦰", xp: 239 },
+  { name: "Mel", avatar: "👩‍🦱", xp: 230 },
 ];
 
 const { width } = Dimensions.get("window");
@@ -112,15 +131,14 @@ function SplashScreen({ onContinue }: { onContinue: () => void }) {
 // ──────────────────────────────────────────────────────────────────────────────
 // One path item: **Tile** with gradient (our new look)
 // ──────────────────────────────────────────────────────────────────────────────
-function LessonTile({
-  item,
-  index,
-  onPress,
-}: {
+type LessonTileProps = {
   item: any;
   index: number;
   onPress: (l: any) => void;
-}) {
+  key?: any;
+};
+
+function LessonTile({ item, index, onPress }: LessonTileProps) {
   // Zig-zag layout (left/right)
   const isLeft = index % 2 === 0;
   const TILE_W = 220;
@@ -155,13 +173,17 @@ function LessonTile({
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-function PathScreen({ lessons, openLesson, wallet }: any) {
+function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
   // Overall progress (stars earned / stars available)
+  const insets = useSafeAreaInsets();
   const progress = useMemo(() => {
     const earned = lessons.reduce((s: number, l: any) => s + l.stars, 0);
     const max    = lessons.reduce((s: number, l: any) => s + l.total, 0);
     return { earned, max, pct: Math.round((earned / max) * 100) || 0 };
   }, [lessons]);
+
+  const section1 = useMemo(() => lessons.filter((l: any) => l.section === 1), [lessons]);
+  const section2 = useMemo(() => lessons.filter((l: any) => l.section === 2), [lessons]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -190,19 +212,57 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
       {/* Scrollable Path */}
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <Text style={styles.sectionLabel}>Section 1 – FCRA Basics</Text>
-        {lessons.map((item: any, idx: number) => (
+        {section1.map((item: any, idx: number) => (
           <LessonTile key={item.id} item={item} index={idx} onPress={openLesson} />
+        ))}
+
+        <Text style={styles.sectionLabel}>Section 2 – FDCPA Basics</Text>
+        {section2.map((item: any, idx: number) => (
+          <LessonTile key={item.id} item={item} index={idx + section1.length} onPress={openLesson} />
         ))}
       </ScrollView>
 
       {/* Bottom nav (placeholder) */}
-      <View style={styles.bottomNav}>
+      <View style={[styles.bottomNav, { paddingBottom: insets.bottom, zIndex: 10 }]}> 
         {["🏠","🎒","🎥","🏆","🐟","💬"].map((icon, i) => (
-          <TouchableOpacity key={i} style={styles.navBtn}>
+          <TouchableOpacity
+            key={i}
+            style={styles.navBtn}
+            onPress={() => icon === "🏆" && openLeaderboard()}
+          >
             <Text style={styles.navIcon}>{icon}</Text>
           </TouchableOpacity>
         ))}
       </View>
+    </SafeAreaView>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Leaderboard screen
+// ──────────────────────────────────────────────────────────────────────────────
+function LeaderboardScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <SafeAreaView style={styles.leaderboardScreen}>
+      <View style={styles.trophyRow}>
+        {['🥇', '🥈', '🥉'].map((t, i) => (
+          <Text key={i} style={styles.trophy}>{t}</Text>
+        ))}
+      </View>
+      <Text style={styles.leaderboardCongrats}>Congratulations! You finished #8 last week.</Text>
+      <View style={styles.leaderboardList}>
+        {SEED_LEADERBOARD.map((p, i) => (
+          <View key={p.name} style={styles.leaderboardItem}>
+            <Text style={styles.leaderboardRank}>{i + 1}</Text>
+            <Text style={styles.leaderboardAvatar}>{p.avatar}</Text>
+            <Text style={styles.leaderboardName}>{p.name}</Text>
+            <Text style={styles.leaderboardXP}>{p.xp} XP</Text>
+          </View>
+        ))}
+      </View>
+      <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onClose}>
+        <Text style={styles.ctaText}>Continue</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -248,6 +308,7 @@ export default function Page() {
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
   const [showSplash, setShowSplash] = useState(true);
 
+
   // Open/close lesson
   const openLesson  = useCallback((lesson: any) => setActiveLesson(lesson), []);
   const closeLesson = useCallback(() => setActiveLesson(null), []);
@@ -283,6 +344,7 @@ export default function Page() {
     : activeLesson
       ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
       : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -355,6 +417,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: THEME.brand.border,
     flexDirection: "row", justifyContent: "space-around", alignItems: "center",
     ...(Platform.OS === "web" ? { backdropFilter: "blur(8px)" as any } : {}),
+    elevation: 4,
   },
   navBtn: { padding: 10, borderRadius: 12 },
   navIcon: { fontSize: 20, color: THEME.text.primary },
@@ -372,4 +435,5 @@ const styles = StyleSheet.create({
   splashImage: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
   splashButton: { backgroundColor: THEME.brand.gold, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
   splashButtonText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
+
 });
