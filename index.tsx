@@ -63,24 +63,172 @@ const gradientByType = (type: string) => {
 // ──────────────────────────────────────────────────────────────────────────────
 const initialWallet = { coins: 10, flames: 0, gems: 189, energy: 25 };
 
+// Default lesson hint copy
+const DEFAULT_HINT =
+  "Teach credit with micro-challenges: 60–90s cards, tap-to-reveal terms, quick quizzes, and \u201capply it to your life\u201d prompts.";
+
 // Lesson seed data (pretend DB rows)
 const SEED_LESSONS = [
-  { id: "S1P1",  title: "FCRA 101 Part 1 – Name the Parties",           type: "reading", unlocked: true,  stars: 0, total: 3, section: 1 },
-  { id: "S1P2",  title: "FCRA 101 Part 2 – Purpose and Scope",          type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P3",  title: "FCRA 101 Part 3 – Permissible Purpose",        type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P4",  title: "FCRA 101 Part 4 – Consumer Rights",            type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P5",  title: "FCRA 101 Part 5 – Furnisher Duties",           type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P6",  title: "FCRA 101 Part 6 – CRA Duties",                 type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P7",  title: "FCRA 101 Part 7 – Dispute Process",            type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P8",  title: "FCRA 101 Part 8 – Enforcement",                type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P9",  title: "FCRA 101 Part 9 – Penalties",                  type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1P10", title: "FCRA 101 Part 10 – Practical Application",     type: "reading", unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1Quiz", title: "FCRA 101 Quiz",                               type: "core",    unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S1Workbook", title: "FCRA 101 Workbook",                       type: "core",    unlocked: false, stars: 0, total: 3, section: 1 },
-  { id: "S2P1", title: "FDCPA 101 Part 1 – Overview",                   type: "reading", unlocked: false, stars: 0, total: 3, section: 2 },
-  { id: "S2P2", title: "FDCPA 101 Part 2 – Communication Rules",        type: "reading", unlocked: false, stars: 0, total: 3, section: 2 },
-  { id: "S2Quiz", title: "FDCPA 101 Quiz",                              type: "core",    unlocked: false, stars: 0, total: 3, section: 2 },
-  { id: "S2Workbook", title: "FDCPA 101 Workbook",                      type: "core",    unlocked: false, stars: 0, total: 3, section: 2 },
+  {
+    id: "S1P1",
+    title: "FCRA 101 Part 1 – Name the Parties",
+    type: "reading",
+    unlocked: true,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P2",
+    title: "FCRA 101 Part 2 – Purpose and Scope",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P3",
+    title: "FCRA 101 Part 3 – Permissible Purpose",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P4",
+    title: "FCRA 101 Part 4 – Consumer Rights",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P5",
+    title: "FCRA 101 Part 5 – Furnisher Duties",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P6",
+    title: "FCRA 101 Part 6 – CRA Duties",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P7",
+    title: "FCRA 101 Part 7 – Dispute Process",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P8",
+    title: "FCRA 101 Part 8 – Enforcement",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P9",
+    title: "FCRA 101 Part 9 – Penalties",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1P10",
+    title: "FCRA 101 Part 10 – Practical Application",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1Quiz",
+    title: "FCRA 101 Quiz",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S1Workbook",
+    title: "FCRA 101 Workbook",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 1,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2P1",
+    title: "FDCPA 101 Part 1 – Overview",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 2,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2P2",
+    title: "FDCPA 101 Part 2 – Communication Rules",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 2,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2Quiz",
+    title: "FDCPA 101 Quiz",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 2,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2Workbook",
+    title: "FDCPA 101 Workbook",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 2,
+    hint: DEFAULT_HINT,
+  },
 ];
 
 // Leaderboard seed data (pretend weekly XP standings)
@@ -284,10 +432,7 @@ function LessonScreen({
       </TouchableOpacity>
 
       <Text style={styles.lessonTitle}>{lesson.title}</Text>
-      <Text style={styles.lessonHint}>
-        Teach credit with micro-challenges: 60–90s cards, tap-to-reveal terms,
-        quick quizzes, and “apply it to your life” prompts.
-      </Text>
+      <Text style={styles.lessonHint}>{lesson.hint}</Text>
 
       <TouchableOpacity style={styles.cta} onPress={onCompleteStar}>
         <Text style={styles.ctaText}>Complete Step ★</Text>
