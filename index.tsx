@@ -55,11 +55,18 @@ const initialWallet = { coins: 10, flames: 0, gems: 189, energy: 25 };
 
 // Lesson seed data (pretend DB rows)
 const SEED_LESSONS = [
-  { id: "L1", title: "Ask how people are",   type: "core",      unlocked: true,  stars: 2, total: 3 },
-  { id: "L2", title: "Credit Score Basics",  type: "reading",   unlocked: true,  stars: 1, total: 3 },
-  { id: "L3", title: "Hard vs Soft Inquiry", type: "listening", unlocked: true,  stars: 0, total: 3 },
-  { id: "L4", title: "Utilization & Limits", type: "core",      unlocked: false, stars: 0, total: 3 },
-  { id: "L5", title: "Payment History",      type: "video",     unlocked: false, stars: 0, total: 3 },
+  { id: "S1P1",  title: "FCRA 101 Part 1 – Name the Parties",           type: "reading", unlocked: true,  stars: 0, total: 3 },
+  { id: "S1P2",  title: "FCRA 101 Part 2 – Purpose and Scope",          type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P3",  title: "FCRA 101 Part 3 – Permissible Purpose",        type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P4",  title: "FCRA 101 Part 4 – Consumer Rights",            type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P5",  title: "FCRA 101 Part 5 – Furnisher Duties",           type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P6",  title: "FCRA 101 Part 6 – CRA Duties",                 type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P7",  title: "FCRA 101 Part 7 – Dispute Process",            type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P8",  title: "FCRA 101 Part 8 – Enforcement",                type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P9",  title: "FCRA 101 Part 9 – Penalties",                  type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1P10", title: "FCRA 101 Part 10 – Practical Application",     type: "reading", unlocked: false, stars: 0, total: 3 },
+  { id: "S1Quiz", title: "FCRA 101 Quiz",                                 type: "core",    unlocked: false, stars: 0, total: 3 },
+  { id: "S1Workbook", title: "FCRA 101 Workbook",                         type: "core",    unlocked: false, stars: 0, total: 3 },
 ];
 
 const { width } = Dimensions.get("window");
@@ -159,6 +166,7 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
 
       {/* Scrollable Path */}
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <Text style={styles.sectionLabel}>Section 1 – FCRA Basics</Text>
         {lessons.map((item: any, idx: number) => (
           <LessonTile key={item.id} item={item} index={idx} onPress={openLesson} />
         ))}
@@ -286,6 +294,15 @@ const styles = StyleSheet.create({
   sectionKicker: { color: THEME.text.muted, fontWeight: "700", fontSize: 12, letterSpacing: 1 },
   sectionSubtitle: { color: THEME.text.primary, fontWeight: "900", fontSize: 20, marginTop: 2 },
   sectionProgress: { color: THEME.text.secondary, fontWeight: "600", marginTop: 6 },
+
+  sectionLabel: {
+    color: THEME.text.primary,
+    fontWeight: "900",
+    fontSize: 18,
+    marginLeft: 16,
+    marginTop: 16,
+    marginBottom: 4,
+  },
 
   // Path tiles
   tileRow: { height: 140, justifyContent: "flex-start" },
