@@ -14,7 +14,7 @@ import {
   Platform,
 } from "react-native";
 import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -152,6 +152,7 @@ function LessonTile({ item, index, onPress }: LessonTileProps) {
 // ──────────────────────────────────────────────────────────────────────────────
 function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
   // Overall progress (stars earned / stars available)
+  const insets = useSafeAreaInsets();
   const progress = useMemo(() => {
     const earned = lessons.reduce((s: number, l: any) => s + l.stars, 0);
     const max    = lessons.reduce((s: number, l: any) => s + l.total, 0);
@@ -199,7 +200,7 @@ function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
       </ScrollView>
 
       {/* Bottom nav (placeholder) */}
-      <View style={styles.bottomNav}>
+      <View style={[styles.bottomNav, { paddingBottom: insets.bottom, zIndex: 10 }]}> 
         {["🏠","🎒","🎥","🏆","🐟","💬"].map((icon, i) => (
           <TouchableOpacity
             key={i}
@@ -314,20 +315,22 @@ export default function Page() {
     });
   }, [activeLesson]);
 
+  let content;
   if (activeLesson) {
-    return <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+    content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+  } else if (showLeaderboard) {
+    content = <LeaderboardScreen onClose={() => setShowLeaderboard(false)} />;
+  } else {
+    content = (
+      <PathScreen
+        lessons={lessons}
+        openLesson={openLesson}
+        wallet={wallet}
+        openLeaderboard={() => setShowLeaderboard(true)}
+      />
+    );
   }
-  if (showLeaderboard) {
-    return <LeaderboardScreen onClose={() => setShowLeaderboard(false)} />;
-  }
-  return (
-    <PathScreen
-      lessons={lessons}
-      openLesson={openLesson}
-      wallet={wallet}
-      openLeaderboard={() => setShowLeaderboard(true)}
-    />
-  );
+  return <SafeAreaProvider>{content}</SafeAreaProvider>;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -400,6 +403,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: THEME.brand.border,
     flexDirection: "row", justifyContent: "space-around", alignItems: "center",
     ...(Platform.OS === "web" ? { backdropFilter: "blur(8px)" as any } : {}),
+    elevation: 4,
   },
   navBtn: { padding: 10, borderRadius: 12 },
   navIcon: { fontSize: 20, color: THEME.text.primary },
