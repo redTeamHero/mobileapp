@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Winning University • Neon City Race</title>
+
+<style>
+/* ========== RESET / THEME ========== */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:radial-gradient(ellipse at 50% 85%, #2f6196 0%, #043b66 70%);
+  font-family:system-ui, Segoe UI, Roboto, sans-serif;
+  overflow:hidden;
+}
+:root{
+  --tier-w:200px; --tier-h:200px;
+  --edge:#0c1a2c; --front:#12385e; --front-light:#16436e; --window-on:#ffb64a;
+  --neon1:#ffd04d; --neon2:#ff9b0a; --neon3:#ffefad;
+}
+
+/* ========== FRONT NEON OVERLAY (ABOVE EVERYTHING) ========== */
+:root{
+  --skyNeon1:#7ef9ff; --skyNeon2:#00c8ff; --skyNeon3:#c8f6ff;
+}
+.sky-neon{
+  position:fixed; z-index:1000;       /* front-most */
+  top:6vh; left:50%; transform:translateX(-50%);
+  width:95vw; text-align:center; pointer-events:none;
+  mix-blend-mode:screen;
+}
+.sky-neon .txt{
+  font: 900 clamp(44px,9vw,140px)/1.02 "Segoe UI",system-ui,sans-serif;
+  letter-spacing:.06em; text-transform:uppercase;
+  color:var(--skyNeon1);
+  text-shadow:
+    0 0 2px var(--skyNeon1),
+    0 0 6px var(--skyNeon1),
+    0 0 16px var(--skyNeon2),
+    0 0 36px var(--skyNeon2),
+    0 0 80px var(--skyNeon3);
+  animation:skyPulse 3s ease-in-out infinite;
+}
+.sky-neon .txt b{color:#fff}
+@keyframes skyPulse{
+  0%,100%{filter:brightness(1);
+    text-shadow:0 0 2px var(--skyNeon1),0 0 6px var(--skyNeon1),
+               0 0 16px var(--skyNeon2),0 0 36px var(--skyNeon2),0 0 80px var(--skyNeon3)}
+  50%{filter:brightness(1.18);
+    text-shadow:0 0 3px var(--skyNeon1),0 0 10px var(--skyNeon1),
+               0 0 26px var(--skyNeon2),0 0 58px var(--skyNeon2),0 0 120px var(--skyNeon3)}
+}
+
+/* ========== SKY OBJECTS ========== */
+.city{position:relative;inset:0;height:100%}
+.moon{position:absolute;z-index:1;top:6vh;left:6vw;width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff 0 40%, #eef 55%, #cbd6ff 70%, transparent 72%);
+  box-shadow:0 0 20px 8px rgba(255,255,255,.12)}
+.stars,.stars:before{content:"";position:absolute;inset:0;z-index:1}
+.stars:before{width:2px;height:2px;border-radius:50%;opacity:.6;box-shadow:
+  6vw 8vh #fff, 14vw 14vh #fff, 22vw 10vh #fff, 31vw 20vh #fff,
+  41vw 9vh #fff, 53vw 16vh #fff, 63vw 6vh #fff, 72vw 15vh #fff,
+  83vw 22vh #fff, 95vw 12vh #fff, 12vw 28vh #fff, 26vw 35vh #fff,
+  37vw 30vh #fff, 48vw 38vh #fff, 68vw 32vh #fff, 88vw 40vh #fff}
+
+/* clouds (parallax) */
+.clouds{position:absolute;inset:0;pointer-events:none;z-index:2}
+.clouds .layer{position:absolute;left:-30vw;right:-30vw;height:30vh}
+.clouds .back{top:8vh;opacity:.25;animation:drift 80s linear infinite}
+.clouds .mid {top:16vh;opacity:.35;animation:drift 55s linear infinite}
+.clouds .front{top:24vh;opacity:.45;animation:drift 38s linear infinite}
+.clouds .layer:before,.clouds .layer:after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 10% 50%, #fff 0 35%, transparent 36%) 0 0/22vw 14vh repeat-x,
+    radial-gradient(ellipse at 40% 40%, #fff 0 35%, transparent 36%) 8vw 2vh/26vw 16vh repeat-x,
+    radial-gradient(ellipse at 75% 55%, #fff 0 35%, transparent 36%) 18vw -1vh/28vw 16vh repeat-x;
+  filter:blur(1.2px)
+}
+.clouds .layer:after{transform:translateX(15vw)}
+@keyframes drift{to{transform:translateX(30vw)}}
+
+/* ========== CITY BASE ========== */
+.ground{position:absolute;left:0;right:0;bottom:0;height:26vh;background:linear-gradient(#0c1527,#0a0f18);z-index:2}
+.road{
+  position:absolute;left:0;right:0;bottom:6vh;height:16vh;background:#0b0f17;z-index:2;
+  border-top:2px solid #0f1a2f;box-shadow:0 -10px 30px rgba(0,0,0,.6) inset;
+  background-image:linear-gradient(to right, transparent 0 8%, #f5f5f5 8% 10%, transparent 10% 20%);
+  background-size:12% 2px;background-repeat:repeat-x;background-position:0 55%;
+}
+
+/* ========== LIGHT POLES ========== */
+.poles{position:absolute;left:0;right:0;bottom:6vh;height:16vh;pointer-events:none;z-index:5}
+.pole{
+  position:absolute;bottom:calc(16vh - 2px);
+  width:4px;height:12vh;background:#1e2a3a;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.35)
+}
+.pole:before{content:"";position:absolute;top:2vh;left:2px;width:36px;height:4px;background:#1e2a3a;border-radius:2px}
+.pole:after{content:"";position:absolute;top:1.6vh;left:34px;width:18px;height:12px;border-radius:10px/6px;background:#ffeaa7;box-shadow:0 0 16px 8px rgba(255,234,167,.45)}
+.pool{
+  position:absolute;bottom:calc(16vh - 1.6vh);width:120px;height:22px;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 50%, rgba(255,234,167,.35), transparent 70%);filter:blur(2px)
+}
+.pole.p1{left:12%}.pool.p1{left:calc(12% + 44px)}
+.pole.p2{left:32%}.pool.p2{left:calc(32% + 44px)}
+.pole.p3{left:52%}.pool.p3{left:calc(52% + 44px)}
+.pole.p4{left:72%}.pool.p4{left:calc(72% + 44px)}
+.pole.p5{left:88%}.pool.p5{left:calc(88% + 44px)}
+
+/* ========== BUILDINGS ========== */
+.b{position:absolute; bottom:26vh; left:calc(var(--x,50%) - calc(var(--tier-w)/2));
+   width:var(--tier-w); height:calc(5 * var(--tier-h)); z-index:3}
+.b > div{
+  position:absolute; left:0; width:var(--tier-w);
+  border:5px 2px 0 2px solid var(--edge); border-radius:6px 6px 0 0; overflow:hidden;
+  background:linear-gradient(to right, var(--front) 0%, var(--front-light) 33%, var(--front) 100%);
+  box-shadow:0 2px 0 rgba(255,255,255,.05) inset, 0 -6px 0 rgba(0,0,0,.18) inset;
+}
+.b1{bottom:0;height:calc(1 * var(--tier-h))}
+.b2{bottom:calc(1 * var(--tier-h));left:20px;width:calc(var(--tier-w) - 40px);height:calc(1 * var(--tier-h))}
+.b3{bottom:calc(2 * var(--tier-h));left:40px;width:calc(var(--tier-w) - 80px);height:calc(.6 * var(--tier-h))}
+.b4{bottom:calc(2.6 * var(--tier-h));left:60px;width:calc(var(--tier-w) - 120px);height:calc(.4 * var(--tier-h))}
+.b5{bottom:calc(3.0 * var(--tier-h));left:80px;width:calc(var(--tier-w) - 160px);height:calc(.2 * var(--tier-h))}
+.b.h1 .b2,.b.h1 .b3,.b.h1 .b4,.b.h1 .b5{display:none}
+.b.h2 .b3,.b.h2 .b4,.b.h2 .b5{display:none}
+.b.h3 .b4,.b.h3 .b5{display:none}
+.b.h4 .b5{display:none}
+
+/* windows */
+.b > div::before,.b > div::after{content:"";position:absolute;inset:8px 6px 0 6px;background-repeat:repeat}
+.b > div::before{
+  background:
+    repeating-linear-gradient(to right, rgba(0,0,0,.35) 0 2px, transparent 2px 12px),
+    repeating-linear-gradient(to bottom, rgba(0,0,0,.35) 0 2px, transparent 2px 12px);
+  mix-blend-mode:multiply;opacity:.8
+}
+.b > div::after{
+  background:
+    repeating-linear-gradient(to right, transparent 0 10px, var(--window-on) 10px 12px, transparent 12px 24px),
+    repeating-linear-gradient(to bottom, transparent 0 10px, var(--window-on) 10px 12px, transparent 12px 24px);
+  mix-blend-mode:screen;opacity:.12;animation:flicker 3.4s steps(6) infinite
+}
+.b2::after{animation-duration:3.8s;animation-delay:.3s}
+.b3::after{animation-duration:4.2s;animation-delay:.6s}
+.b4::after{animation-duration:4.8s;animation-delay:.9s}
+.b5::after{animation-duration:5.2s;animation-delay:1.2s}
+@keyframes flicker{0%,100%{opacity:.06}25%{opacity:.16}50%{opacity:.08}75%{opacity:.2}}
+
+/* ========== NEON BILLBOARDS ========== */
+.b .attachment{position:absolute;left:50%;transform:translateX(-50%)}
+.billboard{
+  bottom:calc(100% - 2px); width:260px;height:96px;border-radius:12px;
+  background:#080c16; border:2px solid #2b3a59;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 18px 28px rgba(0,0,0,.45); z-index:10
+}
+.neon{
+  font-weight:900; text-transform:uppercase; letter-spacing:.1em;
+  font-size:26px; line-height:1.05; text-align:center;
+  color:var(--neon1);
+  text-shadow:0 0 2px var(--neon1),0 0 6px var(--neon1),
+             0 0 12px var(--neon2),0 0 24px var(--neon2),0 0 48px var(--neon3);
+  animation:neonPulse 2.6s ease-in-out infinite;
+}
+.neon b{color:#fff}
+@keyframes neonPulse{
+  0%,100%{filter:brightness(1);text-shadow:0 0 2px var(--neon1),0 0 6px var(--neon1),0 0 14px var(--neon2),0 0 28px var(--neon2),0 0 54px var(--neon3)}
+  50%{filter:brightness(1.2);text-shadow:0 0 3px var(--neon1),0 0 10px var(--neon1),0 0 22px var(--neon2),0 0 44px var(--neon2),0 0 80px var(--neon3)}
+}
+
+/* ========== CARS LAYER ========== */
+#cars-layer{position:absolute;inset:0;z-index:6}
+.car{
+  position:absolute; left:-200px;       /* will reset in JS */
+  bottom:10.5vh;                        /* lane baseline; JS randomizes */
+  width:min(28vw, 260px);
+  height:auto;
+}
+.car-inner{position:relative;width:100%;height:100%;animation:bounce .9s ease-in-out infinite}
+@keyframes bounce{50%{transform:translateY(-1px)}}
+.car-img{display:block;width:100%;height:auto;user-select:none;pointer-events:none}
+/* lights */
+.car-inner::after{content:"";position:absolute;top:52%;right:-8%;width:80%;height:22%;transform:translateY(-50%);background:radial-gradient(ellipse at left, rgba(255,234,167,.55), transparent 60%);filter:blur(2px);opacity:.8}
+.car-inner::before{content:"";position:absolute;left:-6%;top:56%;width:10%;height:16%;transform:translateY(-50%);background:radial-gradient(circle at 30% 50%, #ff6b6b 0 45%, transparent 46%);filter:blur(2px);opacity:.9}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width:900px){
+  :root{--tier-w:150px;--tier-h:150px}
+  .billboard{width:220px;height:84px}
+  .neon{font-size:22px}
+}
+
+/* login button overlay */
+.login-btn{
+  position:fixed;
+  z-index:2000;
+  bottom:8vh;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--neon1);
+  color:#0c1527;
+  font-weight:900;
+  padding:12px 24px;
+  border:none;
+  border-radius:8px;
+  font-size:18px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+  <!-- FRONT neon headline -->
+  <div class="sky-neon"><span class="txt">Winners <b>University</b></span></div>
+
+  <div class="city">
+    <!-- sky objects -->
+    <div class="stars"></div>
+    <div class="moon"></div>
+
+    <!-- clouds -->
+    <div class="clouds">
+      <div class="layer back"></div>
+      <div class="layer mid"></div>
+      <div class="layer front"></div>
+    </div>
+
+    <!-- BUILDINGS -->
+    <div class="b h5" style="--x:18%">
+      <div class="b1"></div><div class="b2"></div><div class="b3"></div><div class="b4"></div>
+      <div class="b5"><div class="attachment billboard"><div class="neon"><b>Everyday</b> Winners</div></div></div>
+    </div>
+    <div class="b h5" style="--x:50%">
+      <div class="b1"></div><div class="b2"></div>
+      <div class="b3"><div class="attachment billboard"><div class="neon">Invest • <b>Win</b></div></div></div>
+      <div class="b4"></div><div class="b5"></div>
+    </div>
+    <div class="b h4" style="--x:78%">
+      <div class="b1"></div><div class="b2"></div>
+      <div class="b3"><div class="attachment billboard"><div class="neon">↑ <b>W</b> • Start Today</div></div></div>
+      <div class="b4"></div><div class="b5"></div>
+    </div>
+
+    <!-- ground + road -->
+    <div class="ground"></div>
+    <div class="road"></div>
+
+    <!-- poles -->
+    <div class="poles">
+      <div class="pole p1"></div><div class="pool p1"></div>
+      <div class="pole p2"></div><div class="pool p2"></div>
+      <div class="pole p3"></div><div class="pool p3"></div>
+      <div class="pole p4"></div><div class="pool p4"></div>
+      <div class="pole p5"></div><div class="pool p5"></div>
+    </div>
+
+    <!-- cars layer -->
+    <div id="cars-layer"></div>
+  </div>
+
+  <button id="login-btn" class="login-btn">Enter City</button>
+
+<script>
+/* ===================== Racing cars with smooth pushing ===================== */
+/* PNGs (left-facing) */
+const CAR_IMAGES = ["lambo.png","r8.png","mclaren.png","bugatti.png"];
+
+/* config */
+const NUM_CARS = 4;
+const SPEED_PX_S = [140, 320];        // min..max pixels per second
+const LANE_BOTTOM_VH = [9.6, 12.6];   // visual vertical band
+const SIZE_SCALE = [0.9, 1.15];
+const START_DELAY_MS = [0, 2200];
+const SAME_LANE_VTHRESH_PX = 24;      // how close vertically to count as same lane
+const GAP_EXTRA_PX = 16;              // extra spacing beyond wheelbases
+const PUSH_STRENGTH = 0.18;           // 0..1 – how strongly rear pushes front per frame
+
+const world = document.getElementById("cars-layer");
+
+function vw(px){ return px * (document.documentElement.clientWidth/100); } // unused helper
+function rand(min,max){ return min + Math.random()*(max-min); }
+function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+let cars = [];
+let lastT = performance.now();
+
+function spawnCar(i){
+  const wrap = document.createElement("div");
+  wrap.className = "car";
+  const inner = document.createElement("div");
+  inner.className = "car-inner";
+  const img = document.createElement("img");
+  img.className = "car-img";
+  img.alt = "Racing car";
+  img.src = CAR_IMAGES[i % CAR_IMAGES.length];
+
+  inner.appendChild(img); wrap.appendChild(inner); world.appendChild(wrap);
+
+  // state
+  const car = {
+    el: wrap,
+    x: -300,          // will adjust after we know width
+    yBottom: rand(LANE_BOTTOM_VH[0], LANE_BOTTOM_VH[1]), // vh
+    speed: rand(SPEED_PX_S[0], SPEED_PX_S[1]),
+    scale: rand(SIZE_SCALE[0], SIZE_SCALE[1]),
+    w: 200,           // will be measured
+    h: 80,            // not critical
+  };
+
+  // apply visual props
+  wrap.style.bottom = car.yBottom.toFixed(2) + "vh";
+  wrap.style.width  = `calc(min(28vw, 260px) * ${car.scale})`;
+
+  // measure width after paint
+  requestAnimationFrame(()=>{
+    car.w = wrap.getBoundingClientRect().width || 200;
+    car.x = -car.w - rand(20, 180); // start just offscreen
+    wrap.style.transform = `translateX(${car.x}px)`;
+  });
+
+  cars.push(car);
+}
+
+/* recycle car when offscreen to the right */
+function recycle(car){
+  car.yBottom = rand(LANE_BOTTOM_VH[0], LANE_BOTTOM_VH[1]);
+  car.scale = rand(SIZE_SCALE[0], SIZE_SCALE[1]);
+  car.speed = rand(SPEED_PX_S[0], SPEED_PX_S[1]);
+
+  car.el.style.bottom = car.yBottom.toFixed(2) + "vh";
+  car.el.style.width  = `calc(min(28vw, 260px) * ${car.scale})`;
+
+  // measure new width then reset x with a light random delay
+  setTimeout(()=>{
+    car.w = car.el.getBoundingClientRect().width || car.w;
+    car.x = -car.w - rand(60, 240);
+  }, rand(START_DELAY_MS[0], START_DELAY_MS[1]));
+}
+
+/* main loop with soft-push separation */
+function tick(t){
+  const dt = Math.min(0.05, (t - lastT)/1000); // clamp dt for stability
+  lastT = t;
+  const rightEdge = document.documentElement.clientWidth + 50;
+
+  // advance by speed
+  for(const c of cars){
+    c.x += c.speed * dt;
+  }
+
+  // group by near-same lane (vertical proximity)
+  const groups = [];
+  const sorted = [...cars].sort((a,b)=>a.yBottom-b.yBottom || a.x-b.x);
+  for(const c of sorted){
+    const g = groups.find(gr => Math.abs(gr.mid - c.yBottom) * window.innerHeight/100 < SAME_LANE_VTHRESH_PX);
+    if(g){ g.list.push(c); g.mid = (g.mid * (g.list.length-1) + c.yBottom)/g.list.length; }
+    else { groups.push({mid:c.yBottom, list:[c]}); }
+  }
+
+  // within each lane group, enforce spacing by pushing forward cars smoothly
+  for(const g of groups){
+    const lane = g.list.sort((a,b)=>a.x-b.x); // left->right
+    for(let i=0;i<lane.length-1;i++){
+      const rear = lane[i];
+      const front = lane[i+1];
+      const minGap = Math.max(rear.w, front.w)*0.6 + GAP_EXTRA_PX;
+      const overlap = (rear.x + minGap) - front.x;
+      if(overlap > 0){
+        // push front ahead smoothly, and also let its speed catch up
+        front.x += overlap * PUSH_STRENGTH;
+        front.speed = Math.max(front.speed, rear.speed*0.95);
+      }
+    }
+  }
+
+  // apply transforms + recycle when offscreen
+  for(const c of cars){
+    if(c.x > rightEdge){ recycle(c); }
+    c.el.style.transform = `translateX(${c.x}px)`;
+  }
+
+  requestAnimationFrame(tick);
+}
+
+/* boot */
+for(let i=0;i<NUM_CARS;i++){
+  setTimeout(()=>spawnCar(i), rand(START_DELAY_MS[0], START_DELAY_MS[1]));
+}
+requestAnimationFrame(tick);
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  if (window.ReactNativeWebView) {
+    window.ReactNativeWebView.postMessage('login');
+  } else {
+    alert('Proceeding to dashboard...');
+  }
+});
+</script>
+</body>
+</html>

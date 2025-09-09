@@ -2,7 +2,7 @@
 // Everyday Winners • Credit Path (custom theme)
 // Works on iOS/Android/Web (Expo). Beginner-friendly inline comments.
 
-import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,11 +12,11 @@ import {
   StatusBar,
   Dimensions,
   Platform,
-  Animated,
 } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { WebView } from "react-native-webview";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // THEME — tweak these colors to rebrand fast
@@ -38,8 +38,6 @@ const THEME = {
   },
 };
 
-// Default splash art (replace URL with your hosted image)
-const SPLASH_IMAGE = "https://via.placeholder.com/1080x1920.png?text=Everyday+Winners";
 
 // Gradient per lesson type
 const gradientByType = (type: string) => {
@@ -257,22 +255,16 @@ const emojiByType = (type: string) =>
   type === "listening" ? "🎧" :
   type === "video"     ? "🎥" : "⭐";
 
-function SplashScreen({ onContinue }: { onContinue: () => void }) {
-  const fade = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fade, { toValue: 1, duration: 800, useNativeDriver: true }).start();
-  }, []);
+function LoginScreen({ onProceed }: { onProceed: () => void }) {
   return (
-    <View style={styles.splashContainer}>
-      <Animated.Image
-        source={{ uri: SPLASH_IMAGE }}
-        style={[styles.splashImage, { opacity: fade }]}
-        resizeMode="cover"
-      />
-      <TouchableOpacity style={styles.splashButton} onPress={onContinue} activeOpacity={0.85}>
-        <Text style={styles.splashButtonText}>Start Winning Today</Text>
-      </TouchableOpacity>
-    </View>
+    <WebView
+      source={require("./login.html")}
+      onMessage={(e) => {
+        if (e.nativeEvent.data === "login") onProceed();
+      }}
+      originWhitelist={["*"]}
+      style={{ flex: 1 }}
+    />
   );
 }
 
@@ -451,7 +443,7 @@ export default function Page() {
   const [lessons, setLessons] = useState(SEED_LESSONS);
   const [wallet] = useState(initialWallet);
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
-  const [showSplash, setShowSplash] = useState(true);
+  const [showLogin, setShowLogin] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
 
@@ -488,8 +480,8 @@ export default function Page() {
     });
   }, [activeLesson]);
 
-  return showSplash
-    ? <SplashScreen onContinue={() => setShowSplash(false)} />
+  return showLogin
+    ? <LoginScreen onProceed={() => setShowLogin(false)} />
     : showLeaderboard
       ? <LeaderboardScreen onClose={closeLeaderboard} />
       : activeLesson
@@ -583,10 +575,5 @@ const styles = StyleSheet.create({
   cta: { backgroundColor: THEME.brand.gold, padding: 14, borderRadius: 12, alignItems: "center" },
   ctaText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
   lessonStars: { marginTop: 12, fontWeight: "800", color: THEME.text.primary },
-
-  splashContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: THEME.brand.navy },
-  splashImage: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
-  splashButton: { backgroundColor: THEME.brand.gold, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
-  splashButtonText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
 
 });
