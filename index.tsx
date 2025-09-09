@@ -307,11 +307,15 @@ export default function Page() {
   const [wallet] = useState(initialWallet);
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
 
   // Open/close lesson
   const openLesson  = useCallback((lesson: any) => setActiveLesson(lesson), []);
   const closeLesson = useCallback(() => setActiveLesson(null), []);
+
+  const openLeaderboard = useCallback(() => setShowLeaderboard(true), []);
+  const closeLeaderboard = useCallback(() => setShowLeaderboard(false), []);
 
   // When a step completes: +1 star (capped). If done, unlock next lesson.
   const onCompleteStar = useCallback(() => {
@@ -341,9 +345,11 @@ export default function Page() {
 
   return showSplash
     ? <SplashScreen onContinue={() => setShowSplash(false)} />
-    : activeLesson
-      ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
-      : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+    : showLeaderboard
+      ? <LeaderboardScreen onClose={closeLeaderboard} />
+      : activeLesson
+        ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
+        : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} openLeaderboard={openLeaderboard} />;
 
 }
 
