@@ -69,6 +69,15 @@ const SEED_LESSONS = [
   { id: "S1Workbook", title: "FCRA 101 Workbook",                         type: "core",    unlocked: false, stars: 0, total: 3 },
 ];
 
+// Leaderboard seed data (pretend weekly XP standings)
+const SEED_LEADERBOARD = [
+  { name: "Ryan", avatar: "🧔", xp: 862 },
+  { name: "Beatriz", avatar: "👩", xp: 480 },
+  { name: "Diego", avatar: "👨‍🦱", xp: 266 },
+  { name: "Larissa Holanda", avatar: "👩‍🦰", xp: 239 },
+  { name: "Mel", avatar: "👩‍🦱", xp: 230 },
+];
+
 const { width } = Dimensions.get("window");
 
 // Small reusable stat badge (coins/gems/energy)
@@ -132,7 +141,7 @@ function LessonTile({
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-function PathScreen({ lessons, openLesson, wallet }: any) {
+function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
   // Overall progress (stars earned / stars available)
   const progress = useMemo(() => {
     const earned = lessons.reduce((s: number, l: any) => s + l.stars, 0);
@@ -175,11 +184,44 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
       {/* Bottom nav (placeholder) */}
       <View style={styles.bottomNav}>
         {["🏠","🎒","🎥","🏆","🐟","💬"].map((icon, i) => (
-          <TouchableOpacity key={i} style={styles.navBtn}>
+          <TouchableOpacity
+            key={i}
+            style={styles.navBtn}
+            onPress={() => icon === "🏆" && openLeaderboard()}
+          >
             <Text style={styles.navIcon}>{icon}</Text>
           </TouchableOpacity>
         ))}
       </View>
+    </SafeAreaView>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Leaderboard screen
+// ──────────────────────────────────────────────────────────────────────────────
+function LeaderboardScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <SafeAreaView style={styles.leaderboardScreen}>
+      <View style={styles.trophyRow}>
+        {['🥇', '🥈', '🥉'].map((t, i) => (
+          <Text key={i} style={styles.trophy}>{t}</Text>
+        ))}
+      </View>
+      <Text style={styles.leaderboardCongrats}>Congratulations! You finished #8 last week.</Text>
+      <View style={styles.leaderboardList}>
+        {SEED_LEADERBOARD.map((p, i) => (
+          <View key={p.name} style={styles.leaderboardItem}>
+            <Text style={styles.leaderboardRank}>{i + 1}</Text>
+            <Text style={styles.leaderboardAvatar}>{p.avatar}</Text>
+            <Text style={styles.leaderboardName}>{p.name}</Text>
+            <Text style={styles.leaderboardXP}>{p.xp} XP</Text>
+          </View>
+        ))}
+      </View>
+      <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onClose}>
+        <Text style={styles.ctaText}>Continue</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -223,6 +265,7 @@ export default function Page() {
   const [lessons, setLessons] = useState(SEED_LESSONS);
   const [wallet] = useState(initialWallet);
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Open/close lesson
   const openLesson  = useCallback((lesson: any) => setActiveLesson(lesson), []);
@@ -254,9 +297,20 @@ export default function Page() {
     });
   }, [activeLesson]);
 
-  return activeLesson
-    ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
-    : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+  if (activeLesson) {
+    return <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+  }
+  if (showLeaderboard) {
+    return <LeaderboardScreen onClose={() => setShowLeaderboard(false)} />;
+  }
+  return (
+    <PathScreen
+      lessons={lessons}
+      openLesson={openLesson}
+      wallet={wallet}
+      openLeaderboard={() => setShowLeaderboard(true)}
+    />
+  );
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -341,4 +395,14 @@ const styles = StyleSheet.create({
   cta: { backgroundColor: THEME.brand.gold, padding: 14, borderRadius: 12, alignItems: "center" },
   ctaText: { fontWeight: "900", fontSize: 16, color: THEME.brand.navy },
   lessonStars: { marginTop: 12, fontWeight: "800", color: THEME.text.primary },
+  leaderboardScreen: { flex: 1, backgroundColor: THEME.brand.slate, alignItems: "center", padding: 16 },
+  trophyRow: { flexDirection: "row", gap: 8, marginTop: 20 },
+  trophy: { fontSize: 32 },
+  leaderboardCongrats: { marginTop: 20, color: THEME.text.primary, fontWeight: "800", fontSize: 18, textAlign: "center" },
+  leaderboardList: { width: "100%", marginTop: 16 },
+  leaderboardItem: { flexDirection: "row", alignItems: "center", paddingVertical: 8 },
+  leaderboardRank: { width: 24, fontWeight: "800", color: THEME.text.primary, fontSize: 16 },
+  leaderboardAvatar: { fontSize: 24, marginRight: 8 },
+  leaderboardName: { flex: 1, color: THEME.text.primary, fontWeight: "600" },
+  leaderboardXP: { color: THEME.text.secondary, fontWeight: "600" },
 });
