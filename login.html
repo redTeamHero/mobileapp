@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Winning University • Neon City Race</title>
 
 <style>
@@ -13,6 +13,8 @@ body{
   background:radial-gradient(ellipse at 50% 85%, #2f6196 0%, #043b66 70%);
   font-family:system-ui, Segoe UI, Roboto, sans-serif;
   overflow:hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 :root{
   --tier-w:200px; --tier-h:200px;
@@ -26,7 +28,7 @@ body{
 }
 .sky-neon{
   position:fixed; z-index:1000;       /* front-most */
-  top:6vh; left:50%; transform:translateX(-50%);
+  top:calc(env(safe-area-inset-top) + 6vh); left:50%; transform:translateX(-50%);
   width:95vw; text-align:center; pointer-events:none;
   mix-blend-mode:screen;
 }
@@ -54,7 +56,7 @@ body{
 
 /* ========== SKY OBJECTS ========== */
 .city{position:relative;inset:0;height:100%}
-.moon{position:absolute;z-index:1;top:6vh;left:6vw;width:70px;height:70px;border-radius:50%;
+.moon{position:absolute;z-index:1;top:calc(env(safe-area-inset-top) + 6vh);left:6vw;width:70px;height:70px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fff 0 40%, #eef 55%, #cbd6ff 70%, transparent 72%);
   box-shadow:0 0 20px 8px rgba(255,255,255,.12)}
 .stars,.stars:before{content:"";position:absolute;inset:0;z-index:1}
@@ -195,7 +197,7 @@ body{
 .login-btn{
   position:fixed;
   z-index:2000;
-  bottom:8vh;
+  bottom:calc(env(safe-area-inset-bottom) + 8vh);
   left:50%;
   transform:translateX(-50%);
   background:var(--neon1);
