@@ -28,7 +28,7 @@ body{
 }
 .sky-neon{
   position:fixed; z-index:1000;       /* front-most */
-  top:calc(env(safe-area-inset-top) + 6vh); left:50%; transform:translateX(-50%);
+  top:calc(env(safe-area-inset-top) + 10vh); left:50%; transform:translateX(-50%);
   width:95vw; text-align:center; pointer-events:none;
   mix-blend-mode:screen;
 }
@@ -104,11 +104,11 @@ body{
   position:absolute;bottom:calc(16vh - 1.6vh);width:120px;height:22px;pointer-events:none;
   background:radial-gradient(ellipse at 20% 50%, rgba(255,234,167,.35), transparent 70%);filter:blur(2px)
 }
-.pole.p1{left:12%}.pool.p1{left:calc(12% + 44px)}
-.pole.p2{left:32%}.pool.p2{left:calc(32% + 44px)}
-.pole.p3{left:52%}.pool.p3{left:calc(52% + 44px)}
-.pole.p4{left:72%}.pool.p4{left:calc(72% + 44px)}
-.pole.p5{left:88%}.pool.p5{left:calc(88% + 44px)}
+.pole.p1{left:10%}.pool.p1{left:calc(10% + 44px)}
+.pole.p2{left:30%}.pool.p2{left:calc(30% + 44px)}
+.pole.p3{left:50%}.pool.p3{left:calc(50% + 44px)}
+.pole.p4{left:70%}.pool.p4{left:calc(70% + 44px)}
+.pole.p5{left:90%}.pool.p5{left:calc(90% + 44px)}
 
 /* ========== BUILDINGS ========== */
 .b{position:absolute; bottom:26vh; left:calc(var(--x,50%) - calc(var(--tier-w)/2));
@@ -228,7 +228,7 @@ body{
     </div>
 
     <!-- BUILDINGS -->
-    <div class="b h5" style="--x:18%">
+    <div class="b h5" style="--x:12%">
       <div class="b1"></div><div class="b2"></div><div class="b3"></div><div class="b4"></div>
       <div class="b5"><div class="attachment billboard"><div class="neon"><b>Everyday</b> Winners</div></div></div>
     </div>
@@ -237,7 +237,7 @@ body{
       <div class="b3"><div class="attachment billboard"><div class="neon">Invest • <b>Win</b></div></div></div>
       <div class="b4"></div><div class="b5"></div>
     </div>
-    <div class="b h4" style="--x:78%">
+    <div class="b h4" style="--x:88%">
       <div class="b1"></div><div class="b2"></div>
       <div class="b3"><div class="attachment billboard"><div class="neon">↑ <b>W</b> • Start Today</div></div></div>
       <div class="b4"></div><div class="b5"></div>
