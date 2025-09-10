@@ -374,7 +374,12 @@ function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
       </ScrollView>
 
       {/* Bottom nav (placeholder) */}
-      <View style={[styles.bottomNav, { paddingBottom: insets.bottom, zIndex: 10 }]}> 
+      <View
+        style={[
+          styles.bottomNav,
+          { paddingBottom: insets.bottom, height: 66 + insets.bottom, zIndex: 10 },
+        ]}
+      >
         {["🏠","🎒","🎥","🏆","🐟","💬"].map((icon, i) => (
           <TouchableOpacity
             key={i}
