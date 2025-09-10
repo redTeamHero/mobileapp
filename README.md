@@ -1,17 +1,18 @@
 # Everyday Winners Mobile App
 
-Animated splash screen fades in a hosted image and routes to the dashboard.
+Neon City login screen (HTML via WebView) opens first, then routes to the dashboard when the **Enter City** button is tapped.
 
 ## Prereqs
 - Node 18+
 - Expo CLI (`npm install -g expo-cli`)
 
 ## Env vars
-None required. To use your own splash art, update the `SPLASH_IMAGE` URL in `index.tsx`.
+None required. The login HTML can be customized in `login.html`.
 
 ## Install
 ```bash
 npm install
+expo install react-native-webview
 ```
 
 ## Run
