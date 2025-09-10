@@ -256,6 +256,17 @@ const emojiByType = (type: string) =>
   type === "video"     ? "🎥" : "⭐";
 
 function LoginScreen({ onProceed }: { onProceed: () => void }) {
+  // WebView doesn't run on web; show a fallback screen
+  if (Platform.OS === "web") {
+    return (
+      <View style={styles.webLogin}>
+        <Text style={styles.webLoginTitle}>Winners University</Text>
+        <TouchableOpacity style={styles.cta} onPress={onProceed}>
+          <Text style={styles.ctaText}>Enter City</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
   return (
     <WebView
       source={require("./login.html")}
@@ -566,6 +577,21 @@ const styles = StyleSheet.create({
   },
   navBtn: { padding: 10, borderRadius: 12 },
   navIcon: { fontSize: 20, color: THEME.text.primary },
+
+  // Fallback login screen for web
+  webLogin: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: THEME.brand.slate,
+    padding: 16,
+  },
+  webLoginTitle: {
+    fontSize: 24,
+    fontWeight: "900",
+    color: THEME.text.primary,
+    marginBottom: 24,
+  },
 
   lessonScreen: { flex: 1, padding: 16, backgroundColor: THEME.brand.slate },
   backBtn: { marginBottom: 16 },
