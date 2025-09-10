@@ -29,8 +29,8 @@ body{
 .sky-neon{
   position:fixed; z-index:1000;       /* front-most */
   top:calc(env(safe-area-inset-top) + 10vh); left:50%; transform:translateX(-50%);
-  width:95vw; text-align:center; pointer-events:none;
-  mix-blend-mode:screen;
+  /* shrink to content so glow doesn't highlight a wide box */
+  width:auto; text-align:center; pointer-events:none;
 }
 .sky-neon .txt{
   font: 900 clamp(44px,9vw,140px)/1.02 "Segoe UI",system-ui,sans-serif;
