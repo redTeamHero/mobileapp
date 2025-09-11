@@ -509,7 +509,7 @@ export default function Page() {
   return (
     <>
       {content}
-      {!showLogin && !showLeaderboard && !activeLesson && (
+      {!showLogin && !activeLesson && (
         <View
           style={[
             styles.bottomNav,
@@ -517,12 +517,12 @@ export default function Page() {
           ]}
         >
           {[
-            { icon: '🏠', action: () => setTab('home') },
-            { icon: '🎥', action: () => setTab('movies') },
+            { icon: '🏠', action: () => { closeLeaderboard(); setTab('home'); } },
+            { icon: '🎥', action: () => { closeLeaderboard(); setTab('movies'); } },
             { icon: '🏆', action: openLeaderboard },
-            { icon: '🎒', action: () => setTab('path') },
-            { icon: '📰', action: () => setTab('rss') },
-            { icon: '💬', action: () => setTab('messages') },
+            { icon: '🎒', action: () => { closeLeaderboard(); setTab('path'); } },
+            { icon: '📰', action: () => { closeLeaderboard(); setTab('rss'); } },
+            { icon: '💬', action: () => { closeLeaderboard(); setTab('messages'); } },
           ].map((item, i) => (
             <TouchableOpacity key={i} style={styles.navBtn} onPress={item.action}>
               <Text style={styles.navIcon}>{item.icon}</Text>
@@ -597,6 +597,37 @@ const styles = StyleSheet.create({
 
   starsRow: { flexDirection: "row", gap: 2, marginTop: 10 },
   starGlyph: { fontSize: 13, color: "#fff" },
+
+  // Leaderboard screen
+  leaderboardScreen: {
+    flex: 1,
+    backgroundColor: THEME.brand.slate,
+    padding: 24,
+    paddingBottom: 120,
+  },
+  trophyRow: { flexDirection: "row", justifyContent: "center", gap: 16, marginBottom: 16 },
+  trophy: { fontSize: 40 },
+  leaderboardCongrats: {
+    color: THEME.text.primary,
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  leaderboardList: { gap: 8, alignSelf: "stretch" },
+  leaderboardItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+  },
+  leaderboardRank: { width: 24, fontWeight: "700", color: THEME.text.primary },
+  leaderboardAvatar: { width: 32, fontSize: 20 },
+  leaderboardName: { flex: 1, fontWeight: "600", color: THEME.text.primary },
+  leaderboardXP: { fontWeight: "600", color: THEME.text.secondary },
 
   bottomNav: {
     position: "absolute", left: 0, right: 0, bottom: 0,
