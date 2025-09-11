@@ -336,11 +336,17 @@ function recycle(car){
   car.el.style.bottom = car.yBottom.toFixed(2) + "vh";
   car.el.style.width  = `calc(min(28vw, 260px) * ${car.scale})`;
 
-  // measure new width then reset x with a light random delay
-  setTimeout(()=>{
+  const offset = rand(60, 240);
+  // immediately reset position so the car jumps offscreen without delay
+  car.x = -car.w - offset;
+  car.el.style.transform = `translateX(${car.x}px)`;
+
+  // after styles settle, re-measure width and adjust position if needed
+  requestAnimationFrame(()=>{
     car.w = car.el.getBoundingClientRect().width || car.w;
-    car.x = -car.w - rand(60, 240);
-  }, rand(START_DELAY_MS[0], START_DELAY_MS[1]));
+    car.x = -car.w - offset;
+    car.el.style.transform = `translateX(${car.x}px)`;
+  });
 }
 
 /* main loop with soft-push separation */
@@ -349,9 +355,10 @@ function tick(t){
   lastT = t;
   const rightEdge = document.documentElement.clientWidth + 50;
 
-  // advance by speed
+  // advance by speed and recycle offscreen cars before grouping
   for(const c of cars){
     c.x += c.speed * dt;
+    if(c.x > rightEdge){ recycle(c); }
   }
 
   // group by near-same lane (vertical proximity)
@@ -379,9 +386,8 @@ function tick(t){
     }
   }
 
-  // apply transforms + recycle when offscreen
+  // apply transforms
   for(const c of cars){
-    if(c.x > rightEdge){ recycle(c); }
     c.el.style.transform = `translateX(${c.x}px)`;
   }
 
