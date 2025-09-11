@@ -407,15 +407,7 @@ function LeaderboardScreen({ onClose }: { onClose: () => void }) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-function MessagesScreen() {
-  return (
-    <SafeAreaView style={styles.screen}>
-      <Text style={{ color: THEME.text.primary, margin: 16, fontSize: 18 }}>Messages</Text>
-    </SafeAreaView>
-  );
-}
-
-function MoviesScreen() {
+function BlankScreen() {
   return <SafeAreaView style={styles.screen} />;
 }
 
@@ -469,7 +461,7 @@ export default function Page() {
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
   const [showLogin, setShowLogin] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies'>('home');
+  const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies' | 'path'>('path');
   const insets = useSafeAreaInsets();
 
 
@@ -510,10 +502,9 @@ export default function Page() {
   if (showLogin) content = <LoginScreen onProceed={() => setShowLogin(false)} />;
   else if (showLeaderboard) content = <LeaderboardScreen onClose={closeLeaderboard} />;
   else if (activeLesson) content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
-  else if (tab === 'messages') content = <MessagesScreen />;
   else if (tab === 'rss') content = <RssFeedScreen />;
-  else if (tab === 'movies') content = <MoviesScreen />;
-  else content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+  else if (tab === 'path') content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
+  else content = <BlankScreen />;
 
   return (
     <>
@@ -529,7 +520,8 @@ export default function Page() {
             { icon: '🏠', action: () => setTab('home') },
             { icon: '🎥', action: () => setTab('movies') },
             { icon: '🏆', action: openLeaderboard },
-            { icon: '🆕', action: () => setTab('rss') },
+            { icon: '🎒', action: () => setTab('path') },
+            { icon: '📰', action: () => setTab('rss') },
             { icon: '💬', action: () => setTab('messages') },
           ].map((item, i) => (
             <TouchableOpacity key={i} style={styles.navBtn} onPress={item.action}>
