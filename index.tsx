@@ -275,6 +275,7 @@ function LoginScreen({ onProceed }: { onProceed: () => void }) {
       }}
       originWhitelist={["*"]}
       style={{ flex: 1 }}
+      scalesPageToFit={false}
     />
   );
 }
@@ -324,9 +325,8 @@ function LessonTile({ item, index, onPress }: LessonTileProps) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
+function PathScreen({ lessons, openLesson, wallet }: any) {
   // Overall progress (stars earned / stars available)
-  const insets = useSafeAreaInsets();
   const progress = useMemo(() => {
     const earned = lessons.reduce((s: number, l: any) => s + l.stars, 0);
     const max    = lessons.reduce((s: number, l: any) => s + l.total, 0);
@@ -373,23 +373,6 @@ function PathScreen({ lessons, openLesson, wallet, openLeaderboard }: any) {
         ))}
       </ScrollView>
 
-      {/* Bottom nav (placeholder) */}
-      <View
-        style={[
-          styles.bottomNav,
-          { paddingBottom: insets.bottom, height: 66 + insets.bottom, zIndex: 10 },
-        ]}
-      >
-        {["🏠","🎒","🎥","🏆","🐟","💬"].map((icon, i) => (
-          <TouchableOpacity
-            key={i}
-            style={styles.navBtn}
-            onPress={() => icon === "🏆" && openLeaderboard()}
-          >
-            <Text style={styles.navIcon}>{icon}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
     </SafeAreaView>
   );
 }
@@ -419,6 +402,31 @@ function LeaderboardScreen({ onClose }: { onClose: () => void }) {
       <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onClose}>
         <Text style={styles.ctaText}>Continue</Text>
       </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+function MessagesScreen() {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <Text style={{ color: THEME.text.primary, margin: 16, fontSize: 18 }}>Messages</Text>
+    </SafeAreaView>
+  );
+}
+
+function MoviesScreen() {
+  return <SafeAreaView style={styles.screen} />;
+}
+
+function RssFeedScreen() {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <WebView
+        source={{ uri: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml" }}
+        style={{ flex: 1 }}
+        scalesPageToFit={false}
+      />
     </SafeAreaView>
   );
 }
@@ -461,6 +469,8 @@ export default function Page() {
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
   const [showLogin, setShowLogin] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies'>('home');
+  const insets = useSafeAreaInsets();
 
 
   // Open/close lesson
@@ -496,14 +506,40 @@ export default function Page() {
     });
   }, [activeLesson]);
 
-  return showLogin
-    ? <LoginScreen onProceed={() => setShowLogin(false)} />
-    : showLeaderboard
-      ? <LeaderboardScreen onClose={closeLeaderboard} />
-      : activeLesson
-        ? <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />
-        : <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} openLeaderboard={openLeaderboard} />;
+  let content;
+  if (showLogin) content = <LoginScreen onProceed={() => setShowLogin(false)} />;
+  else if (showLeaderboard) content = <LeaderboardScreen onClose={closeLeaderboard} />;
+  else if (activeLesson) content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+  else if (tab === 'messages') content = <MessagesScreen />;
+  else if (tab === 'rss') content = <RssFeedScreen />;
+  else if (tab === 'movies') content = <MoviesScreen />;
+  else content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
 
+  return (
+    <>
+      {content}
+      {!showLogin && !showLeaderboard && !activeLesson && (
+        <View
+          style={[
+            styles.bottomNav,
+            { paddingBottom: insets.bottom, height: 66 + insets.bottom, zIndex: 10 },
+          ]}
+        >
+          {[
+            { icon: '🏠', action: () => setTab('home') },
+            { icon: '🎥', action: () => setTab('movies') },
+            { icon: '🏆', action: openLeaderboard },
+            { icon: '🆕', action: () => setTab('rss') },
+            { icon: '💬', action: () => setTab('messages') },
+          ].map((item, i) => (
+            <TouchableOpacity key={i} style={styles.navBtn} onPress={item.action}>
+              <Text style={styles.navIcon}>{item.icon}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </>
+  );
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
