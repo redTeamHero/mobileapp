@@ -491,15 +491,70 @@ function MessagesScreen() {
 }
 
 function RssFeedScreen() {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(
+          "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+        );
+        const xml = await res.text();
+        setItems(parseRSS(xml));
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   return (
     <SafeAreaView style={styles.screen}>
-      <WebView
-        source={{ uri: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml" }}
-        style={{ flex: 1 }}
-        scalesPageToFit={false}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: THEME.text.secondary }}>Loading...</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
+          {items.map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.rssItem}
+              onPress={() => Linking.openURL(item.link)}
+            >
+              <Text style={styles.rssTitle}>{item.title}</Text>
+              <Text style={styles.rssDate}>
+                {new Date(item.pubDate).toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
+}
+
+function parseRSS(xml: string) {
+  const items = [] as any[];
+  const regex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = regex.exec(xml)) !== null) {
+    const item = match[1];
+    const titleMatch =
+      item.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/) ||
+      item.match(/<title>([\s\S]*?)<\/title>/);
+    const linkMatch = item.match(/<link>([\s\S]*?)<\/link>/);
+    const dateMatch = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
+    items.push({
+      title: titleMatch ? titleMatch[1] || titleMatch[2] : "Untitled",
+      link: linkMatch ? linkMatch[1].trim() : "",
+      pubDate: dateMatch ? dateMatch[1].trim() : "",
+    });
+  }
+  return items;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -743,6 +798,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   questionText: { color: THEME.text.primary, fontWeight: "600" },
+
+  rssItem: {
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    gap: 4,
+  },
+  rssTitle: { color: THEME.text.primary, fontWeight: "700", fontSize: 16 },
+  rssDate: { color: THEME.text.secondary, fontSize: 12 },
 
   bottomNav: {
     position: "absolute", left: 0, right: 0, bottom: 0,
