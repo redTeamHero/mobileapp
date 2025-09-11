@@ -439,6 +439,36 @@ function BlankScreen() {
   return <SafeAreaView style={styles.screen} />;
 }
 
+function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={styles.sectionSubtitle}>Dashboard</Text>
+        <View style={styles.dashboardRow}>
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardValue}>{wallet.coins}</Text>
+            <Text style={styles.dashboardLabel}>Coins</Text>
+          </View>
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardValue}>{wallet.flames}</Text>
+            <Text style={styles.dashboardLabel}>Flames</Text>
+          </View>
+        </View>
+        <View style={styles.dashboardRow}>
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardValue}>{wallet.gems}</Text>
+            <Text style={styles.dashboardLabel}>Gems</Text>
+          </View>
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardValue}>{wallet.energy}</Text>
+            <Text style={styles.dashboardLabel}>Energy</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
 function MessagesScreen() {
   const [messages, setMessages] = useState([
     { id: 1, title: 'Welcome to Everyday Winners!', read: false },
@@ -596,7 +626,7 @@ export default function Page() {
   const [showLogin, setShowLogin] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies' | 'path'>('path');
+  const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies' | 'path'>('home');
   const insets = useSafeAreaInsets();
 
 
@@ -649,6 +679,7 @@ export default function Page() {
   else if (showLeaderboard) content = <LeaderboardScreen onContinue={goToStats} />;
   else if (showStats) content = <StatsScreen onClose={closeStats} />;
   else if (activeLesson) content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+  else if (tab === 'home') content = <DashboardScreen wallet={wallet} />;
   else if (tab === 'messages') content = <MessagesScreen />;
   else if (tab === 'rss') content = <RssFeedScreen />;
   else if (tab === 'path') content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
@@ -795,6 +826,7 @@ const styles = StyleSheet.create({
   },
   messageUnread: { opacity: 0.8 },
   messageText: { color: '#fff' },
+
   link: { color: THEME.brand.teal, fontWeight: "700", fontSize: 16 },
   questionBtn: {
     backgroundColor: THEME.brand.teal,
