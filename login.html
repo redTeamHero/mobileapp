@@ -365,7 +365,7 @@ function tick(t){
     else { groups.push({mid:c.yBottom, list:[c]}); }
   }
 
-  // within each lane group, enforce spacing by pushing forward cars smoothly
+  // within each lane group, keep cars separated while allowing overtaking
   for(const g of groups){
     const lane = g.list.sort((a,b)=>a.x-b.x); // left->right
     for(let i=0;i<lane.length-1;i++){
@@ -374,9 +374,15 @@ function tick(t){
       const minGap = Math.max(rear.w, front.w)*0.6 + GAP_EXTRA_PX;
       const overlap = (rear.x + minGap) - front.x;
       if(overlap > 0){
-        // push front ahead smoothly, and also let its speed catch up
-        front.x += overlap * PUSH_STRENGTH;
-        front.speed = Math.max(front.speed, rear.speed*0.95);
+        if(rear.speed > front.speed){
+          // let the faster rear car pass without teleporting offscreen
+          const target = front.x + minGap;
+          rear.x = Math.min(target, rightEdge - rear.w);
+        } else {
+          // push front ahead smoothly, and also let its speed catch up
+          front.x += overlap * PUSH_STRENGTH;
+          front.speed = Math.max(front.speed, rear.speed*0.95);
+        }
       }
     }
   }
