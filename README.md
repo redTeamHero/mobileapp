@@ -1,6 +1,6 @@
 # Everyday Winners Mobile App
 
-Neon City login screen (HTML via WebView) opens first, then routes to the dashboard when the **Enter City** button is tapped.
+Neon City login screen (HTML via WebView) opens first, then routes to the dashboard when the screen is tapped.
 
 ## Prereqs
 - Node 18+
