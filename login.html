@@ -276,6 +276,7 @@ const START_DELAY_MS = [0, 2200];
 const SAME_LANE_VTHRESH_PX = 24;      // how close vertically to count as same lane
 const GAP_EXTRA_PX = 16;              // extra spacing beyond wheelbases
 const PUSH_STRENGTH = 0.18;           // 0..1 – how strongly rear pushes front per frame
+const PASS_STRENGTH = 0.2;            // 0..1 – easing factor when a faster car passes
 
 const world = document.getElementById("cars-layer");
 
@@ -375,9 +376,9 @@ function tick(t){
       const overlap = (rear.x + minGap) - front.x;
       if(overlap > 0){
         if(rear.speed > front.speed){
-          // let the faster rear car pass without teleporting offscreen
-          const target = front.x + minGap;
-          rear.x = Math.min(target, rightEdge - rear.w);
+          // ease the rear car toward a position ahead of the slower car
+          const target = Math.min(front.x + minGap, rightEdge - rear.w);
+          rear.x += (target - rear.x) * PASS_STRENGTH;
 
         } else {
           // push front ahead smoothly, and also let its speed catch up
