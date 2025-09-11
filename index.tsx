@@ -230,6 +230,46 @@ const SEED_LESSONS = [
     section: 2,
     hint: DEFAULT_HINT,
   },
+    {
+    id: "S2P1",
+    title: "FDCPA 101 Part 1 – Overview",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 3,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2P2",
+    title: "FDCPA 101 Part 2 – Communication Rules",
+    type: "reading",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 3,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2Quiz",
+    title: "FDCPA 101 Quiz",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 3,
+    hint: DEFAULT_HINT,
+  },
+  {
+    id: "S2Workbook",
+    title: "FDCPA 101 Workbook",
+    type: "core",
+    unlocked: false,
+    stars: 0,
+    total: 3,
+    section: 3,
+    hint: DEFAULT_HINT,
+  },
 ];
 
 // Leaderboard seed data (pretend weekly XP standings)
@@ -264,9 +304,7 @@ function LoginScreen({ onProceed }: { onProceed: () => void }) {
     return (
       <TouchableOpacity style={styles.webLogin} onPress={onProceed} activeOpacity={1}>
         <Text style={styles.webLoginTitle}>Winners University</Text>
-        <View style={styles.cta}>
-          <Text style={styles.ctaText}>Enter City</Text>
-        </View>
+       
       </TouchableOpacity>
     );
   }
@@ -338,12 +376,12 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
 
   const section1 = useMemo(() => lessons.filter((l: any) => l.section === 1), [lessons]);
   const section2 = useMemo(() => lessons.filter((l: any) => l.section === 2), [lessons]);
+  const section3 = useMemo(() => lessons.filter((l: any) => l.section === 3), [lessons]);
+
 
   return (
     <SafeAreaView style={styles.screen}>
-      {/* sets page title / header on web */}
-      <Stack.Screen options={{ title: "Everyday Winners · Credit Path" }} />
-      <StatusBar barStyle={Platform.OS === "ios" ? "light-content" : "light-content"} />
+      
 
       {/* Top bar with economy + section header */}
       <View style={styles.topBar}>
@@ -355,7 +393,7 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionKicker}>EVERYDAY WINNERS • CREDIT ACADEMY</Text>
+          <Text style={styles.sectionKicker}>WINNERS ACADEMY</Text>
           <Text style={styles.sectionSubtitle}>Basics of Credit</Text>
           <Text style={styles.sectionProgress}>
             Progress: {progress.earned}/{progress.max} ({progress.pct}%)
@@ -373,6 +411,10 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
         <Text style={styles.sectionLabel}>Section 2 – FDCPA Basics</Text>
         {section2.map((item: any, idx: number) => (
           <LessonTile key={item.id} item={item} index={idx + section1.length} onPress={openLesson} />
+        ))}
+        <Text style={styles.sectionLabel}>Section 3 – GLBA Basics</Text>
+        {section3.map((item: any, idx: number) => (
+          <LessonTile key={item.id} item={item} index={idx + section2.length} onPress={openLesson} />
         ))}
       </ScrollView>
 
@@ -492,27 +534,7 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
           </View>
         )}
 
-        <Text style={[styles.sectionSubtitle, { marginTop: 16 }]}>Balances</Text>
-        <View style={styles.dashboardRow}>
-          <View style={styles.dashboardCard}>
-            <Text style={styles.dashboardValue}>{wallet.coins}</Text>
-            <Text style={styles.dashboardLabel}>Coins</Text>
-          </View>
-          <View style={styles.dashboardCard}>
-            <Text style={styles.dashboardValue}>{wallet.flames}</Text>
-            <Text style={styles.dashboardLabel}>Flames</Text>
-          </View>
-        </View>
-        <View style={styles.dashboardRow}>
-          <View style={styles.dashboardCard}>
-            <Text style={styles.dashboardValue}>{wallet.gems}</Text>
-            <Text style={styles.dashboardLabel}>Gems</Text>
-          </View>
-          <View style={styles.dashboardCard}>
-            <Text style={styles.dashboardValue}>{wallet.energy}</Text>
-            <Text style={styles.dashboardLabel}>Energy</Text>
-          </View>
-        </View>
+        
       </ScrollView>
     </SafeAreaView>
   );
