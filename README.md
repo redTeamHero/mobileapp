@@ -4,7 +4,7 @@ Neon City login screen (HTML via WebView) opens first, then routes to the dashbo
 
 ## Features
 - Home dashboard shows coin, flame, gem, and energy balances at a glance.
-- Bottom navigation includes a **Messages** tab with an RSS-style feed, quick contact buttons (email & call), and four preset questions for fast outreach.
+- Bottom navigation includes a **Messages** tab with an RSS-style feed, quick contact buttons (email & call), and four preset questions for fast outreach. Message threads stay hidden until a question is picked and each question keeps its own conversation.
 
 ## Prereqs
 - Node 18+
