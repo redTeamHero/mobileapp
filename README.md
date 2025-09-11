@@ -7,6 +7,7 @@ Neon City login screen (HTML via WebView) opens first, then routes to the dashbo
 - Upload buttons accept ID and proof-of-residency documents.
 - Recommended actions appear centered beneath tradelines for quick next steps.
 - Bottom navigation includes a **Messages** tab with an RSS-style feed, quick contact buttons (email & call), and four preset questions for fast outreach. Message threads stay hidden until a question is picked and each question keeps its own conversation.
+- A **Movies** tab plays credit education videos from YouTube inside the app.
 
 ## Prereqs
 - Node 18+

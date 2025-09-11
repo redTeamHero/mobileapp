@@ -281,6 +281,20 @@ const SEED_LEADERBOARD = [
   { name: "Mel", avatar: "👩‍🦱", xp: 230 },
 ];
 
+// Simple movie list using YouTube URLs
+const SEED_MOVIES = [
+  {
+    id: "vid1",
+    title: "Credit Basics Explained",
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  },
+  {
+    id: "vid2",
+    title: "Understanding the FCRA",
+    url: "https://www.youtube.com/watch?v=9bZkp7q19f0",
+  },
+];
+
 const { width } = Dimensions.get("window");
 
 // Small reusable stat badge (coins/gems/energy)
@@ -785,6 +799,53 @@ function parseRSS(xml: string) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// Movies screen: plays YouTube videos
+// ──────────────────────────────────────────────────────────────────────────────
+function MoviesScreen() {
+  const [current, setCurrent] = useState<any | null>(null);
+
+  const embedUrl = (url: string) => {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  };
+
+  if (current) {
+    if (Platform.OS === 'web') {
+      return (
+        <SafeAreaView style={styles.screen}>
+          <TouchableOpacity onPress={() => setCurrent(null)} style={styles.backBtn}>
+            <Text style={styles.backTxt}>← Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.cta, { marginTop: 16 }]} onPress={() => Linking.openURL(current.url)}>
+            <Text style={styles.ctaText}>Open Video</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      );
+    }
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: THEME.brand.slate }}>
+        <TouchableOpacity onPress={() => setCurrent(null)} style={[styles.backBtn, { margin: 16 }]}>
+          <Text style={styles.backTxt}>← Back</Text>
+        </TouchableOpacity>
+        <WebView style={{ flex: 1 }} source={{ uri: embedUrl(current.url) }} />
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
+        {SEED_MOVIES.map((m) => (
+          <TouchableOpacity key={m.id} style={styles.videoItem} onPress={() => setCurrent(m)}>
+            <Text style={styles.videoTitle}>{m.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 function LessonScreen({
   lesson,
   onBack,
@@ -879,6 +940,7 @@ export default function Page() {
   else if (tab === 'home') content = <DashboardScreen wallet={wallet} />;
   else if (tab === 'messages') content = <MessagesScreen />;
   else if (tab === 'rss') content = <RssFeedScreen />;
+  else if (tab === 'movies') content = <MoviesScreen />;
   else if (tab === 'path') content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
   else content = <BlankScreen />;
 
@@ -1086,6 +1148,15 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   questionText: { color: '#fff', fontWeight: "600" },
+
+  videoItem: {
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+  },
+  videoTitle: { color: THEME.text.primary, fontWeight: "700", fontSize: 16 },
 
   rssItem: {
     backgroundColor: THEME.brand.glass,
