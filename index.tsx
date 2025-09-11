@@ -469,46 +469,74 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
   );
 }
 
+type Message = { id: number; text: string; from: 'support' | 'user'; read: boolean };
+
 function MessagesScreen() {
-  const [messages, setMessages] = useState([
-    { id: 1, text: 'Welcome to Everyday Winners!', from: 'support', read: false },
-    { id: 2, text: 'Your weekly report is ready.', from: 'support', read: true },
-    { id: 3, text: 'Thanks! Got it.', from: 'user', read: true },
-  ]);
   const preset = [
-    'How do I start a dispute?',
-    'What documents do you need?',
-    'How long does each step take?',
-    'Can I get a consultation?',
+    { key: 'dispute', text: 'How do I start a dispute?' },
+    { key: 'docs', text: 'What documents do you need?' },
+    { key: 'timeline', text: 'How long does each step take?' },
+    { key: 'consult', text: 'Can I get a consultation?' },
   ];
-  const markRead = (id: number) =>
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, read: true } : m))
-    );
+
+  const initialChats: Record<string, Message[]> = {
+    dispute: [
+      { id: 1, text: 'You can start a dispute from your dashboard.', from: 'support', read: false },
+    ],
+    docs: [
+      { id: 1, text: 'We need a copy of your ID and proof of address.', from: 'support', read: false },
+    ],
+    timeline: [
+      { id: 1, text: 'Each step typically takes 30-45 days.', from: 'support', read: false },
+    ],
+    consult: [
+      { id: 1, text: 'Yes, book a consultation via the link we send.', from: 'support', read: false },
+    ],
+  };
+
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [chats, setChats] = useState<Record<string, Message[]>>(initialChats);
+
+  const markRead = (id: number) => {
+    if (!selectedReason) return;
+    setChats((prev) => ({
+      ...prev,
+      [selectedReason]: prev[selectedReason].map((m) =>
+        m.id === id ? { ...m, read: true } : m
+      ),
+    }));
+  };
+
+  const messages = selectedReason ? chats[selectedReason] : [];
+
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
-        <Text style={styles.sectionSubtitle}>Messages</Text>
-        {messages.map((m) => (
-          <TouchableOpacity
-            key={m.id}
-            onPress={() => markRead(m.id)}
-            style={[
-              styles.messageBubble,
-              m.from === 'user' ? styles.messageOut : styles.messageIn,
-              !m.read && styles.messageUnread,
-            ]}
-          >
-            <Text
-              style={[
-                styles.messageText,
-                m.from !== 'user' && styles.messageTextIn,
-              ]}
-            >
-              {m.text}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {selectedReason && (
+          <>
+            <Text style={styles.sectionSubtitle}>Messages</Text>
+            {messages.map((m) => (
+              <TouchableOpacity
+                key={m.id}
+                onPress={() => markRead(m.id)}
+                style={[
+                  styles.messageBubble,
+                  m.from === 'user' ? styles.messageOut : styles.messageIn,
+                  !m.read && styles.messageUnread,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.messageText,
+                    m.from !== 'user' && styles.messageTextIn,
+                  ]}
+                >
+                  {m.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
         <View style={{ marginTop: 24 }}>
           <Text style={styles.sectionSubtitle}>Contact Us</Text>
           <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
@@ -521,9 +549,13 @@ function MessagesScreen() {
           </View>
         </View>
         <View style={{ marginTop: 40, gap: 12, alignItems: 'center' }}>
-          {preset.map((q, idx) => (
-            <TouchableOpacity key={idx} style={styles.questionBtn}>
-              <Text style={styles.questionText}>{q}</Text>
+          {preset.map((q) => (
+            <TouchableOpacity
+              key={q.key}
+              style={styles.questionBtn}
+              onPress={() => setSelectedReason(q.key)}
+            >
+              <Text style={styles.questionText}>{q.text}</Text>
             </TouchableOpacity>
           ))}
         </View>
