@@ -28,7 +28,7 @@ body{
 }
 .sky-neon{
   position:fixed; z-index:1000;       /* front-most */
-  top:calc(env(safe-area-inset-top) + 10vh); left:50%; transform:translateX(-50%);
+  top:calc(env(safe-area-inset-top) + 32vh); left:50%; transform:translateX(-50%);
   /* shrink to content so glow doesn't highlight a wide box */
   width:auto; text-align:center; pointer-events:none;
 }
@@ -56,7 +56,7 @@ body{
 
 /* ========== SKY OBJECTS ========== */
 .city{position:relative;inset:0;height:100%}
-.moon{position:absolute;z-index:1;top:calc(env(safe-area-inset-top) + 6vh);left:6vw;width:70px;height:70px;border-radius:50%;
+.moon{position:absolute;z-index:1;top:calc(env(safe-area-inset-top) + 2vh);left:6vw;width:70px;height:70px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fff 0 40%, #eef 55%, #cbd6ff 70%, transparent 72%);
   box-shadow:0 0 20px 8px rgba(255,255,255,.12);
   animation:moonGlow 4s ease-in-out infinite;overflow:hidden}
@@ -201,7 +201,7 @@ body{
 .login-btn{
   position:fixed;
   z-index:2000;
-  bottom:calc(env(safe-area-inset-bottom) + 8vh);
+  bottom:calc(env(safe-area-inset-bottom) + 40vh);
   left:50%;
   transform:translateX(-50%);
   background:var(--neon1);
@@ -232,19 +232,17 @@ body{
     </div>
 
     <!-- BUILDINGS -->
-    <div class="b h5" style="--x:12%">
+    <div class="b h5" style="--x:1%">
       <div class="b1"></div><div class="b2"></div><div class="b3"></div><div class="b4"></div>
-      <div class="b5"><div class="attachment billboard"><div class="neon"><b>Everyday</b> Winners</div></div></div>
     </div>
     <div class="b h5" style="--x:50%">
       <div class="b1"></div><div class="b2"></div>
       <div class="b3"><div class="attachment billboard"><div class="neon">Invest • <b>Win</b></div></div></div>
       <div class="b4"></div><div class="b5"></div>
     </div>
-    <div class="b h4" style="--x:88%">
+    <div class="b h4" style="--x:98%">
       <div class="b1"></div><div class="b2"></div>
       <div class="b3"><div class="attachment billboard"><div class="neon">↑ <b>W</b> • Start Today</div></div></div>
-      <div class="b4"></div><div class="b5"></div>
     </div>
 
     <!-- ground + road -->
@@ -254,9 +252,7 @@ body{
     <!-- poles -->
     <div class="poles">
       <div class="pole p1"></div><div class="pool p1"></div>
-      <div class="pole p2"></div><div class="pool p2"></div>
       <div class="pole p3"></div><div class="pool p3"></div>
-      <div class="pole p4"></div><div class="pool p4"></div>
       <div class="pole p5"></div><div class="pool p5"></div>
     </div>
 
@@ -273,7 +269,7 @@ const CAR_IMAGES = ["lambo.png","r8.png","mclaren.png","bugatti.png"];
 
 /* config */
 const NUM_CARS = 4;
-const SPEED_PX_S = [140, 320];        // min..max pixels per second
+const SPEED_PX_S = [140, 400];        // min..max pixels per second
 const LANE_BOTTOM_VH = [9.6, 12.6];   // visual vertical band
 const SIZE_SCALE = [0.9, 1.15];
 const START_DELAY_MS = [0, 2200];
@@ -336,11 +332,17 @@ function recycle(car){
   car.el.style.bottom = car.yBottom.toFixed(2) + "vh";
   car.el.style.width  = `calc(min(28vw, 260px) * ${car.scale})`;
 
-  // measure new width then reset x with a light random delay
-  setTimeout(()=>{
+ const offset = rand(60, 240);
+  // immediately reset position so the car jumps offscreen without delay
+  car.x = -car.w - offset;
+  car.el.style.transform = `translateX(${car.x}px)`;
+
+  // after styles settle, re-measure width and adjust position if needed
+  requestAnimationFrame(()=>{
     car.w = car.el.getBoundingClientRect().width || car.w;
-    car.x = -car.w - rand(60, 240);
-  }, rand(START_DELAY_MS[0], START_DELAY_MS[1]));
+    car.x = -car.w - offset;
+    car.el.style.transform = `translateX(${car.x}px)`;
+  });
 }
 
 /* main loop with soft-push separation */
