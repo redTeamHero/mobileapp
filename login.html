@@ -58,7 +58,11 @@ body{
 .city{position:relative;inset:0;height:100%}
 .moon{position:absolute;z-index:1;top:calc(env(safe-area-inset-top) + 6vh);left:6vw;width:70px;height:70px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fff 0 40%, #eef 55%, #cbd6ff 70%, transparent 72%);
-  box-shadow:0 0 20px 8px rgba(255,255,255,.12)}
+  box-shadow:0 0 20px 8px rgba(255,255,255,.12);
+  animation:moonGlow 4s ease-in-out infinite;overflow:hidden}
+.moon::after{content:"$";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:38px;font-weight:700;color:rgba(0,0,0,.25);mix-blend-mode:multiply}
+@keyframes moonGlow{0%,100%{box-shadow:0 0 20px 8px rgba(255,255,255,.12)}50%{box-shadow:0 0 30px 12px rgba(255,255,255,.35)}}
 .stars,.stars:before{content:"";position:absolute;inset:0;z-index:1}
 .stars:before{width:2px;height:2px;border-radius:50%;opacity:.6;box-shadow:
   6vw 8vh #fff, 14vw 14vh #fff, 22vw 10vh #fff, 31vw 20vh #fff,
