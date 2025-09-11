@@ -260,16 +260,15 @@ body{
     <div id="cars-layer"></div>
   </div>
 
-  <button id="login-btn" class="login-btn">Enter City</button>
 
 <script>
 /* ===================== Racing cars with smooth pushing ===================== */
 /* PNGs (left-facing) */
-const CAR_IMAGES = ["lambo.png","r8.png","mclaren.png","bugatti.png"];
+const CAR_IMAGES = ["lambo.png","r8.png","mclaren.png","bugatti.png","ferrari.png","porshe.png"];
 
 /* config */
-const NUM_CARS = 4;
-const SPEED_PX_S = [140, 400];        // min..max pixels per second
+const NUM_CARS = 6;
+const SPEED_PX_S = [140, 450];        // min..max pixels per second
 const LANE_BOTTOM_VH = [9.6, 12.6];   // visual vertical band
 const SIZE_SCALE = [0.9, 1.15];
 const START_DELAY_MS = [0, 2200];
@@ -367,27 +366,7 @@ function tick(t){
   }
 
   // within each lane group, keep cars separated while allowing overtaking
-  for(const g of groups){
-    const lane = g.list.sort((a,b)=>a.x-b.x); // left->right
-    for(let i=0;i<lane.length-1;i++){
-      const rear = lane[i];
-      const front = lane[i+1];
-      const minGap = Math.max(rear.w, front.w)*0.6 + GAP_EXTRA_PX;
-      const overlap = (rear.x + minGap) - front.x;
-      if(overlap > 0){
-        if(rear.speed > front.speed){
-          // ease the rear car toward a position ahead of the slower car
-          const target = Math.min(front.x + minGap, rightEdge - rear.w);
-          rear.x += (target - rear.x) * PASS_STRENGTH;
-
-        } else {
-          // push front ahead smoothly, and also let its speed catch up
-          front.x += overlap * PUSH_STRENGTH;
-          front.speed = Math.max(front.speed, rear.speed*0.95);
-        }
-      }
-    }
-  }
+  
 
   // apply transforms + recycle when offscreen
   for(const c of cars){
