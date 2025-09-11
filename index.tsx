@@ -456,7 +456,7 @@ function MessagesScreen() {
     );
   return (
     <SafeAreaView style={styles.screen}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
         <Text style={styles.sectionSubtitle}>Messages</Text>
         {messages.map((m) => (
           <TouchableOpacity
@@ -478,7 +478,7 @@ function MessagesScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ marginTop: 24, gap: 8 }}>
+        <View style={{ marginTop: 40, gap: 12, alignItems: 'center' }}>
           {preset.map((q, idx) => (
             <TouchableOpacity key={idx} style={styles.questionBtn}>
               <Text style={styles.questionText}>{q}</Text>
@@ -785,19 +785,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   messageItem: {
+    alignSelf: 'flex-end',
+    backgroundColor: THEME.brand.teal,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.brand.border,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    marginBottom: 8,
+    maxWidth: '80%',
   },
-  messageUnread: { backgroundColor: THEME.brand.glass },
-  messageText: { color: THEME.text.primary },
+  messageUnread: { opacity: 0.8 },
+  messageText: { color: '#fff' },
   link: { color: THEME.brand.teal, fontWeight: "700", fontSize: 16 },
   questionBtn: {
-    backgroundColor: THEME.brand.glass,
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: THEME.brand.teal,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    alignSelf: 'center',
+    maxWidth: '80%',
   },
-  questionText: { color: THEME.text.primary, fontWeight: "600" },
+  questionText: { color: '#fff', fontWeight: "600" },
 
   rssItem: {
     backgroundColor: THEME.brand.glass,
