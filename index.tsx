@@ -18,6 +18,8 @@ import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { WebView } from "react-native-webview";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // THEME — tweak these colors to rebrand fast
@@ -440,10 +442,57 @@ function BlankScreen() {
 }
 
 function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
+  const [userName] = useState("Ducky");
+  const [creditScore] = useState(720);
+  const [deletions] = useState<string[]>([]);
+  const [reportItems, setReportItems] = useState<string[]>([]);
+
+  const handleUpload = async () => {
+    const result = await DocumentPicker.getDocumentAsync({ type: "text/html" });
+    if (result.type === "success") {
+      const html = await FileSystem.readAsStringAsync(result.uri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const matches = html.match(/<li[^>]*>(.*?)<\/li>/g) || [];
+      const items = matches.map((m) => m.replace(/<[^>]+>/g, "").trim());
+      setReportItems(items);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <Text style={styles.sectionSubtitle}>Dashboard</Text>
+        <Text style={styles.welcomeText}>Hi {userName} 👋</Text>
+        <Text style={styles.creditScore}>Credit Score: {creditScore}</Text>
+
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionKicker}>DELETIONS</Text>
+          {deletions.length === 0 && (
+            <Text style={styles.reportItem}>No deletions yet</Text>
+          )}
+          {deletions.map((d, i) => (
+            <Text key={i} style={styles.reportItem}>
+              • {d}
+            </Text>
+          ))}
+        </View>
+
+        <TouchableOpacity style={styles.uploadBtn} onPress={handleUpload}>
+          <Text style={styles.uploadText}>Upload Report HTML</Text>
+        </TouchableOpacity>
+
+        {reportItems.length > 0 && (
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionKicker}>REPORT ITEMS</Text>
+            {reportItems.map((item, i) => (
+              <Text key={i} style={styles.reportItem}>
+                • {item}
+              </Text>
+            ))}
+          </View>
+        )}
+
+        <Text style={[styles.sectionSubtitle, { marginTop: 16 }]}>Balances</Text>
         <View style={styles.dashboardRow}>
           <View style={styles.dashboardCard}>
             <Text style={styles.dashboardValue}>{wallet.coins}</Text>
@@ -779,6 +828,18 @@ const styles = StyleSheet.create({
   },
   statText: { fontSize: 14, marginRight: 6, color: THEME.text.secondary },
   statValue: { fontWeight: "800", fontSize: 14, color: THEME.text.primary },
+
+  welcomeText: { color: THEME.text.primary, fontSize: 18, fontWeight: "900" },
+  creditScore: { color: THEME.text.primary, marginTop: 4, marginBottom: 8, fontWeight: "700" },
+  uploadBtn: {
+    marginTop: 16,
+    backgroundColor: THEME.brand.teal,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  uploadText: { color: THEME.brand.navy, fontWeight: "700" },
+  reportItem: { color: THEME.text.primary, marginTop: 4 },
 
   sectionCard: {
     backgroundColor: THEME.brand.glass,
