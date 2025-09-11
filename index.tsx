@@ -471,8 +471,9 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
 
 function MessagesScreen() {
   const [messages, setMessages] = useState([
-    { id: 1, title: 'Welcome to Everyday Winners!', read: false },
-    { id: 2, title: 'Your weekly report is ready.', read: true },
+    { id: 1, text: 'Welcome to Everyday Winners!', from: 'support', read: false },
+    { id: 2, text: 'Your weekly report is ready.', from: 'support', read: true },
+    { id: 3, text: 'Thanks! Got it.', from: 'user', read: true },
   ]);
   const preset = [
     'How do I start a dispute?',
@@ -492,9 +493,20 @@ function MessagesScreen() {
           <TouchableOpacity
             key={m.id}
             onPress={() => markRead(m.id)}
-            style={[styles.messageItem, !m.read && styles.messageUnread]}
+            style={[
+              styles.messageBubble,
+              m.from === 'user' ? styles.messageOut : styles.messageIn,
+              !m.read && styles.messageUnread,
+            ]}
           >
-            <Text style={styles.messageText}>{m.title}</Text>
+            <Text
+              style={[
+                styles.messageText,
+                m.from !== 'user' && styles.messageTextIn,
+              ]}
+            >
+              {m.text}
+            </Text>
           </TouchableOpacity>
         ))}
         <View style={{ marginTop: 24 }}>
@@ -815,17 +827,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
-  messageItem: {
-    alignSelf: 'flex-end',
-    backgroundColor: THEME.brand.teal,
+  messageBubble: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 18,
     marginBottom: 8,
     maxWidth: '80%',
   },
+  messageOut: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#0A84FF',
+  },
+  messageIn: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#E5E5EA',
+  },
   messageUnread: { opacity: 0.8 },
   messageText: { color: '#fff' },
+  messageTextIn: { color: '#000' },
 
   link: { color: THEME.brand.teal, fontWeight: "700", fontSize: 16 },
   questionBtn: {
