@@ -396,13 +396,16 @@ for(let i=0;i<NUM_CARS;i++){
 }
 requestAnimationFrame(tick);
 
-document.getElementById('login-btn').addEventListener('click', () => {
+function proceed() {
   if (window.ReactNativeWebView) {
     window.ReactNativeWebView.postMessage('login');
   } else {
     alert('Proceeding to dashboard...');
   }
-});
+}
+
+// Allow tapping anywhere on the screen to continue
+document.addEventListener('click', proceed, { once: true });
 </script>
 </body>
 </html>

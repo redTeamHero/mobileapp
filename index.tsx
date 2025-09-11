@@ -259,12 +259,12 @@ function LoginScreen({ onProceed }: { onProceed: () => void }) {
   // WebView doesn't run on web; show a fallback screen
   if (Platform.OS === "web") {
     return (
-      <View style={styles.webLogin}>
+      <TouchableOpacity style={styles.webLogin} onPress={onProceed} activeOpacity={1}>
         <Text style={styles.webLoginTitle}>Winners University</Text>
-        <TouchableOpacity style={styles.cta} onPress={onProceed}>
+        <View style={styles.cta}>
           <Text style={styles.ctaText}>Enter City</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     );
   }
   return (
