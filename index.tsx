@@ -259,12 +259,12 @@ function LoginScreen({ onProceed }: { onProceed: () => void }) {
   // WebView doesn't run on web; show a fallback screen
   if (Platform.OS === "web") {
     return (
-      <View style={styles.webLogin}>
+      <TouchableOpacity style={styles.webLogin} onPress={onProceed} activeOpacity={1}>
         <Text style={styles.webLoginTitle}>Winners University</Text>
-        <TouchableOpacity style={styles.cta} onPress={onProceed}>
+        <View style={styles.cta}>
           <Text style={styles.ctaText}>Enter City</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     );
   }
   return (
@@ -558,11 +558,12 @@ export default function Page() {
         >
           {[ 
             { icon: '🏠', action: () => { closeOverlays(); setTab('home'); } },
+            { icon: '🎒', action: () => { closeOverlays(); setTab('path'); } },
             { icon: '🎥', action: () => { closeOverlays(); setTab('movies'); } },
             { icon: '🏆', action: openLeaderboard },
-            { icon: '🎒', action: () => { closeOverlays(); setTab('path'); } },
             { icon: '📰', action: () => { closeOverlays(); setTab('rss'); } },
             { icon: '💬', action: () => { closeOverlays(); setTab('messages'); } },
+
           ].map((item, i) => (
             <TouchableOpacity key={i} style={styles.navBtn} onPress={item.action}>
               <Text style={styles.navIcon}>{item.icon}</Text>
@@ -675,6 +676,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
+
 
   bottomNav: {
     position: "absolute", left: 0, right: 0, bottom: 0,
