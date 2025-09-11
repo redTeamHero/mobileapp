@@ -379,6 +379,7 @@ function tick(t){
           // ease the rear car toward a position ahead of the slower car
           const target = Math.min(front.x + minGap, rightEdge - rear.w);
           rear.x += (target - rear.x) * PASS_STRENGTH;
+
         } else {
           // push front ahead smoothly, and also let its speed catch up
           front.x += overlap * PUSH_STRENGTH;
