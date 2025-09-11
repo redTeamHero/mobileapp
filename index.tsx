@@ -485,11 +485,38 @@ function BlankScreen() {
 
 function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
   const [userName] = useState("Ducky");
-  const [creditScore] = useState(720);
   const [deletions] = useState<string[]>([]);
-  const [reportItems, setReportItems] = useState<string[]>([]);
+  const [tradelines, setTradelines] = useState<string[]>([]);
+  const [recommendedActions, setRecommendedActions] = useState<string[]>([
+    "Review your report for errors",
+    "Maintain low credit utilization",
+  ]);
+  const [scores, setScores] = useState({
+    experian: null as number | null,
+    equifax: null as number | null,
+    transunion: null as number | null,
+  });
+  const [idFile, setIdFile] = useState<string | null>(null);
+  const [residencyFile, setResidencyFile] = useState<string | null>(null);
 
-  const handleUpload = async () => {
+  const pickDocument = async () =>
+    DocumentPicker.getDocumentAsync({ type: ["image/*", "application/pdf"] });
+
+  const handleUploadId = async () => {
+    const result = await pickDocument();
+    if (result.type === "success") {
+      setIdFile(result.name || "ID selected");
+    }
+  };
+
+  const handleUploadResidency = async () => {
+    const result = await pickDocument();
+    if (result.type === "success") {
+      setResidencyFile(result.name || "Proof selected");
+    }
+  };
+
+  const handleUploadReport = async () => {
     const result = await DocumentPicker.getDocumentAsync({ type: "text/html" });
     if (result.type === "success") {
       const html = await FileSystem.readAsStringAsync(result.uri, {
@@ -497,7 +524,24 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
       });
       const matches = html.match(/<li[^>]*>(.*?)<\/li>/g) || [];
       const items = matches.map((m) => m.replace(/<[^>]+>/g, "").trim());
-      setReportItems(items);
+      setTradelines(items);
+
+      const exp = html.match(/Experian[^0-9]*([0-9]{3})/i);
+      const equ = html.match(/Equifax[^0-9]*([0-9]{3})/i);
+      const tran = html.match(/TransUnion[^0-9]*([0-9]{3})/i);
+      setScores({
+        experian: exp ? parseInt(exp[1], 10) : null,
+        equifax: equ ? parseInt(equ[1], 10) : null,
+        transunion: tran ? parseInt(tran[1], 10) : null,
+      });
+
+      const recMatches = html.match(/<action[^>]*>(.*?)<\/action>/g) || [];
+      if (recMatches.length) {
+        const recs = recMatches.map((m) =>
+          m.replace(/<[^>]+>/g, "").trim()
+        );
+        setRecommendedActions(recs);
+      }
     }
   };
 
@@ -505,7 +549,24 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={styles.welcomeText}>Hi {userName} 👋</Text>
-        <Text style={styles.creditScore}>Credit Score: {creditScore}</Text>
+        <View style={styles.scoresRow}>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Experian</Text>
+            <Text style={styles.scoreValue}>
+              {scores.experian ?? "--"}
+            </Text>
+          </View>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Equifax</Text>
+            <Text style={styles.scoreValue}>{scores.equifax ?? "--"}</Text>
+          </View>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>TransUnion</Text>
+            <Text style={styles.scoreValue}>
+              {scores.transunion ?? "--"}
+            </Text>
+          </View>
+        </View>
 
         <View style={styles.sectionCard}>
           <Text style={styles.sectionKicker}>DELETIONS</Text>
@@ -519,16 +580,37 @@ function DashboardScreen({ wallet }: { wallet: typeof initialWallet }) {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.uploadBtn} onPress={handleUpload}>
+        <TouchableOpacity style={styles.uploadBtn} onPress={handleUploadId}>
+          <Text style={styles.uploadText}>Upload ID</Text>
+        </TouchableOpacity>
+        {idFile && <Text style={styles.uploadNote}>{idFile}</Text>}
+
+        <TouchableOpacity style={styles.uploadBtn} onPress={handleUploadResidency}>
+          <Text style={styles.uploadText}>Upload Proof of Residency</Text>
+        </TouchableOpacity>
+        {residencyFile && <Text style={styles.uploadNote}>{residencyFile}</Text>}
+
+        <TouchableOpacity style={styles.uploadBtn} onPress={handleUploadReport}>
           <Text style={styles.uploadText}>Upload Report HTML</Text>
         </TouchableOpacity>
 
-        {reportItems.length > 0 && (
+        {tradelines.length > 0 && (
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionKicker}>REPORT ITEMS</Text>
-            {reportItems.map((item, i) => (
-              <Text key={i} style={styles.reportItem}>
-                • {item}
+            <Text style={styles.sectionKicker}>TRADLINES</Text>
+            {tradelines.map((item, i) => (
+              <View key={i} style={styles.tradelineCard}>
+                <Text style={styles.tradelineText}>{item}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {recommendedActions.length > 0 && (
+          <View style={[styles.sectionCard, styles.centeredCard]}>
+            <Text style={styles.sectionKicker}>RECOMMENDED ACTIONS</Text>
+            {recommendedActions.map((a, i) => (
+              <Text key={i} style={styles.actionText}>
+                • {a}
               </Text>
             ))}
           </View>
@@ -852,7 +934,23 @@ const styles = StyleSheet.create({
   statValue: { fontWeight: "800", fontSize: 14, color: THEME.text.primary },
 
   welcomeText: { color: THEME.text.primary, fontSize: 18, fontWeight: "900" },
-  creditScore: { color: THEME.text.primary, marginTop: 4, marginBottom: 8, fontWeight: "700" },
+  scoresRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  scoreCard: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+  },
+  scoreLabel: { color: THEME.text.secondary, fontSize: 12 },
+  scoreValue: { color: THEME.text.primary, fontSize: 20, fontWeight: "700" },
   uploadBtn: {
     marginTop: 16,
     backgroundColor: THEME.brand.teal,
@@ -861,6 +959,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   uploadText: { color: THEME.brand.navy, fontWeight: "700" },
+  uploadNote: {
+    color: THEME.text.secondary,
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "center",
+  },
   reportItem: { color: THEME.text.primary, marginTop: 4 },
 
   sectionCard: {
@@ -876,6 +980,17 @@ const styles = StyleSheet.create({
   sectionKicker: { color: THEME.text.muted, fontWeight: "700", fontSize: 12, letterSpacing: 1 },
   sectionSubtitle: { color: THEME.text.primary, fontWeight: "900", fontSize: 20, marginTop: 2 },
   sectionProgress: { color: THEME.text.secondary, fontWeight: "600", marginTop: 6 },
+  centeredCard: { alignItems: "center" },
+  actionText: { color: THEME.text.primary, marginTop: 4, textAlign: "center" },
+  tradelineCard: {
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 8,
+  },
+  tradelineText: { color: THEME.text.primary },
 
   sectionLabel: {
     color: THEME.text.primary,

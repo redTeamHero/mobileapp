@@ -3,7 +3,9 @@
 Neon City login screen (HTML via WebView) opens first, then routes to the dashboard when the screen is tapped.
 
 ## Features
-- Home dashboard greets the user by name, shows deletions and current credit score, lets you upload a credit report HTML file, and displays items from that report along with coin, flame, gem, and energy balances.
+- Home dashboard greets the user by name, shows scores from all three bureaus, lets you upload a credit report HTML file, and renders parsed tradelines as cards.
+- Upload buttons accept ID and proof-of-residency documents.
+- Recommended actions appear centered beneath tradelines for quick next steps.
 - Bottom navigation includes a **Messages** tab with an RSS-style feed, quick contact buttons (email & call), and four preset questions for fast outreach. Message threads stay hidden until a question is picked and each question keeps its own conversation.
 
 ## Prereqs
