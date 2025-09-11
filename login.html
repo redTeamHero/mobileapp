@@ -375,8 +375,10 @@ function tick(t){
       const overlap = (rear.x + minGap) - front.x;
       if(overlap > 0){
         if(rear.speed > front.speed){
-          // let the faster rear car pass the slower front car
-          rear.x = front.x + minGap;
+          // let the faster rear car pass without teleporting offscreen
+          const target = front.x + minGap;
+          rear.x = Math.min(target, rightEdge - rear.w);
+
         } else {
           // push front ahead smoothly, and also let its speed catch up
           front.x += overlap * PUSH_STRENGTH;
