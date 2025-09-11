@@ -276,6 +276,7 @@ const START_DELAY_MS = [0, 2200];
 const SAME_LANE_VTHRESH_PX = 24;      // how close vertically to count as same lane
 const GAP_EXTRA_PX = 16;              // extra spacing beyond wheelbases
 const PUSH_STRENGTH = 0.18;           // 0..1 – how strongly rear pushes front per frame
+const PASS_STRENGTH = 0.2;            // 0..1 – easing factor when a faster car passes
 
 const world = document.getElementById("cars-layer");
 
@@ -365,7 +366,7 @@ function tick(t){
     else { groups.push({mid:c.yBottom, list:[c]}); }
   }
 
-  // within each lane group, enforce spacing by pushing forward cars smoothly
+  // within each lane group, keep cars separated while allowing overtaking
   for(const g of groups){
     const lane = g.list.sort((a,b)=>a.x-b.x); // left->right
     for(let i=0;i<lane.length-1;i++){
@@ -374,9 +375,15 @@ function tick(t){
       const minGap = Math.max(rear.w, front.w)*0.6 + GAP_EXTRA_PX;
       const overlap = (rear.x + minGap) - front.x;
       if(overlap > 0){
-        // push front ahead smoothly, and also let its speed catch up
-        front.x += overlap * PUSH_STRENGTH;
-        front.speed = Math.max(front.speed, rear.speed*0.95);
+        if(rear.speed > front.speed){
+          // ease the rear car toward a position ahead of the slower car
+          const target = Math.min(front.x + minGap, rightEdge - rear.w);
+          rear.x += (target - rear.x) * PASS_STRENGTH;
+        } else {
+          // push front ahead smoothly, and also let its speed catch up
+          front.x += overlap * PUSH_STRENGTH;
+          front.speed = Math.max(front.speed, rear.speed*0.95);
+        }
       }
     }
   }
