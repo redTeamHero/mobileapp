@@ -12,6 +12,7 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  Linking,
 } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -438,6 +439,57 @@ function BlankScreen() {
   return <SafeAreaView style={styles.screen} />;
 }
 
+function MessagesScreen() {
+  const [messages, setMessages] = useState([
+    { id: 1, title: 'Welcome to Everyday Winners!', read: false },
+    { id: 2, title: 'Your weekly report is ready.', read: true },
+  ]);
+  const preset = [
+    'How do I start a dispute?',
+    'What documents do you need?',
+    'How long does each step take?',
+    'Can I get a consultation?',
+  ];
+  const markRead = (id: number) =>
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, read: true } : m))
+    );
+  return (
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={styles.sectionSubtitle}>Messages</Text>
+        {messages.map((m) => (
+          <TouchableOpacity
+            key={m.id}
+            onPress={() => markRead(m.id)}
+            style={[styles.messageItem, !m.read && styles.messageUnread]}
+          >
+            <Text style={styles.messageText}>{m.title}</Text>
+          </TouchableOpacity>
+        ))}
+        <View style={{ marginTop: 24 }}>
+          <Text style={styles.sectionSubtitle}>Contact Us</Text>
+          <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
+            <TouchableOpacity onPress={() => Linking.openURL('mailto:support@example.com')}>
+              <Text style={styles.link}>Email</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL('tel:+1234567890')}>
+              <Text style={styles.link}>Call</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ marginTop: 24, gap: 8 }}>
+          {preset.map((q, idx) => (
+            <TouchableOpacity key={idx} style={styles.questionBtn}>
+              <Text style={styles.questionText}>{q}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
 function RssFeedScreen() {
   return (
     <SafeAreaView style={styles.screen}>
@@ -542,6 +594,7 @@ export default function Page() {
   else if (showLeaderboard) content = <LeaderboardScreen onContinue={goToStats} />;
   else if (showStats) content = <StatsScreen onClose={closeStats} />;
   else if (activeLesson) content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
+  else if (tab === 'messages') content = <MessagesScreen />;
   else if (tab === 'rss') content = <RssFeedScreen />;
   else if (tab === 'path') content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
   else content = <BlankScreen />;
@@ -676,7 +729,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
-
+  messageItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.brand.border,
+  },
+  messageUnread: { backgroundColor: THEME.brand.glass },
+  messageText: { color: THEME.text.primary },
+  link: { color: THEME.brand.teal, fontWeight: "700", fontSize: 16 },
+  questionBtn: {
+    backgroundColor: THEME.brand.glass,
+    padding: 12,
+    borderRadius: 8,
+  },
+  questionText: { color: THEME.text.primary, fontWeight: "600" },
 
   bottomNav: {
     position: "absolute", left: 0, right: 0, bottom: 0,
