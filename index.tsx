@@ -380,7 +380,7 @@ function PathScreen({ lessons, openLesson, wallet }: any) {
 // ──────────────────────────────────────────────────────────────────────────────
 // Leaderboard screen
 // ──────────────────────────────────────────────────────────────────────────────
-function LeaderboardScreen({ onClose }: { onClose: () => void }) {
+function LeaderboardScreen({ onContinue }: { onContinue: () => void }) {
   return (
     <SafeAreaView style={styles.leaderboardScreen}>
       <View style={styles.trophyRow}>
@@ -399,8 +399,35 @@ function LeaderboardScreen({ onClose }: { onClose: () => void }) {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onClose}>
+      <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onContinue}>
         <Text style={styles.ctaText}>Continue</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+// Simple stats screen shown after leaderboard continue
+function StatsScreen({ onClose }: { onClose: () => void }) {
+  const stats = { rank: 8, xp: 863, stars: 12 };
+  return (
+    <SafeAreaView style={styles.leaderboardScreen}>
+      <Text style={styles.statsTitle}>Last Week's Stats</Text>
+      <View style={styles.leaderboardList}>
+        <View style={styles.leaderboardItem}>
+          <Text style={styles.leaderboardName}>Rank</Text>
+          <Text style={styles.leaderboardXP}>#{stats.rank}</Text>
+        </View>
+        <View style={styles.leaderboardItem}>
+          <Text style={styles.leaderboardName}>XP</Text>
+          <Text style={styles.leaderboardXP}>{stats.xp}</Text>
+        </View>
+        <View style={styles.leaderboardItem}>
+          <Text style={styles.leaderboardName}>Stars</Text>
+          <Text style={styles.leaderboardXP}>{stats.stars}</Text>
+        </View>
+      </View>
+      <TouchableOpacity style={[styles.cta, { marginTop: 24 }]} onPress={onClose}>
+        <Text style={styles.ctaText}>Close</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -461,6 +488,7 @@ export default function Page() {
   const [activeLesson, setActiveLesson] = useState<any | null>(null);
   const [showLogin, setShowLogin] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [tab, setTab] = useState<'home' | 'messages' | 'rss' | 'movies' | 'path'>('path');
   const insets = useSafeAreaInsets();
 
@@ -469,8 +497,19 @@ export default function Page() {
   const openLesson  = useCallback((lesson: any) => setActiveLesson(lesson), []);
   const closeLesson = useCallback(() => setActiveLesson(null), []);
 
-  const openLeaderboard = useCallback(() => setShowLeaderboard(true), []);
-  const closeLeaderboard = useCallback(() => setShowLeaderboard(false), []);
+  const openLeaderboard = useCallback(() => {
+    setShowStats(false);
+    setShowLeaderboard(true);
+  }, []);
+  const goToStats = useCallback(() => {
+    setShowLeaderboard(false);
+    setShowStats(true);
+  }, []);
+  const closeStats = useCallback(() => setShowStats(false), []);
+  const closeOverlays = useCallback(() => {
+    setShowLeaderboard(false);
+    setShowStats(false);
+  }, []);
 
   // When a step completes: +1 star (capped). If done, unlock next lesson.
   const onCompleteStar = useCallback(() => {
@@ -500,7 +539,8 @@ export default function Page() {
 
   let content;
   if (showLogin) content = <LoginScreen onProceed={() => setShowLogin(false)} />;
-  else if (showLeaderboard) content = <LeaderboardScreen onClose={closeLeaderboard} />;
+  else if (showLeaderboard) content = <LeaderboardScreen onContinue={goToStats} />;
+  else if (showStats) content = <StatsScreen onClose={closeStats} />;
   else if (activeLesson) content = <LessonScreen lesson={activeLesson} onBack={closeLesson} onCompleteStar={onCompleteStar} />;
   else if (tab === 'rss') content = <RssFeedScreen />;
   else if (tab === 'path') content = <PathScreen lessons={lessons} openLesson={openLesson} wallet={wallet} />;
@@ -509,20 +549,20 @@ export default function Page() {
   return (
     <>
       {content}
-      {!showLogin && !showLeaderboard && !activeLesson && (
+      {!showLogin && !activeLesson && (
         <View
           style={[
             styles.bottomNav,
             { paddingBottom: insets.bottom, height: 66 + insets.bottom, zIndex: 10 },
           ]}
         >
-          {[
-            { icon: '🏠', action: () => setTab('home') },
-            { icon: '🎥', action: () => setTab('movies') },
+          {[ 
+            { icon: '🏠', action: () => { closeOverlays(); setTab('home'); } },
+            { icon: '🎥', action: () => { closeOverlays(); setTab('movies'); } },
             { icon: '🏆', action: openLeaderboard },
-            { icon: '🎒', action: () => setTab('path') },
-            { icon: '📰', action: () => setTab('rss') },
-            { icon: '💬', action: () => setTab('messages') },
+            { icon: '🎒', action: () => { closeOverlays(); setTab('path'); } },
+            { icon: '📰', action: () => { closeOverlays(); setTab('rss'); } },
+            { icon: '💬', action: () => { closeOverlays(); setTab('messages'); } },
           ].map((item, i) => (
             <TouchableOpacity key={i} style={styles.navBtn} onPress={item.action}>
               <Text style={styles.navIcon}>{item.icon}</Text>
@@ -597,6 +637,44 @@ const styles = StyleSheet.create({
 
   starsRow: { flexDirection: "row", gap: 2, marginTop: 10 },
   starGlyph: { fontSize: 13, color: "#fff" },
+
+  // Leaderboard screen
+  leaderboardScreen: {
+    flex: 1,
+    backgroundColor: THEME.brand.slate,
+    padding: 24,
+    paddingBottom: 120,
+  },
+  trophyRow: { flexDirection: "row", justifyContent: "center", gap: 16, marginBottom: 16 },
+  trophy: { fontSize: 40 },
+  leaderboardCongrats: {
+    color: THEME.text.primary,
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  leaderboardList: { gap: 8, alignSelf: "stretch" },
+  leaderboardItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: THEME.brand.glass,
+    borderColor: THEME.brand.border,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+  },
+  leaderboardRank: { width: 24, fontWeight: "700", color: THEME.text.primary },
+  leaderboardAvatar: { width: 32, fontSize: 20 },
+  leaderboardName: { flex: 1, fontWeight: "600", color: THEME.text.primary },
+  leaderboardXP: { fontWeight: "600", color: THEME.text.secondary },
+  statsTitle: {
+    color: THEME.text.primary,
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 16,
+  },
 
   bottomNav: {
     position: "absolute", left: 0, right: 0, bottom: 0,
