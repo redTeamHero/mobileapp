@@ -7,7 +7,13 @@
 
 <style>
 /* ========== RESET / THEME ========== */
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 html,body{height:100%}
 body{
   background:radial-gradient(ellipse at 50% 85%, #2f6196 0%, #043b66 70%);
@@ -15,6 +21,7 @@ body{
   overflow:hidden;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  -webkit-tap-highlight-color:transparent;
 }
 :root{
   --tier-w:200px; --tier-h:200px;
