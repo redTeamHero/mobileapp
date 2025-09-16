@@ -945,7 +945,7 @@ export default function Page() {
   else content = <BlankScreen />;
 
   return (
-    <>
+    <SafeAreaProvider>
       {content}
       {!showLogin && !activeLesson && (
         <View
@@ -954,7 +954,7 @@ export default function Page() {
             { paddingBottom: insets.bottom, height: 66 + insets.bottom, zIndex: 10 },
           ]}
         >
-          {[ 
+          {[
             { icon: '🏠', action: () => { closeOverlays(); setTab('home'); } },
             { icon: '🎒', action: () => { closeOverlays(); setTab('path'); } },
             { icon: '🎥', action: () => { closeOverlays(); setTab('movies'); } },
@@ -969,7 +969,7 @@ export default function Page() {
           ))}
         </View>
       )}
-    </>
+    </SafeAreaProvider>
   );
 }
 
